@@ -1,0 +1,11 @@
+.DS_Store
+.idea
+*.log
+tmp/
+
+edda.h
+
+.build
+Packages
+*.xcodeproj
+xcuserdata/

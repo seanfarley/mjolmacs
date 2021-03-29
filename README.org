@@ -1,0 +1,14 @@
+#+title: mjolmacs
+
+* Introduction
+
+An experimental project to use the Accessbility API from MacOS via an [[file:20210202172633-emacs.org][emacs]]
+dynamic module. Basically, Hammerspoon (or a minimum version of it) for Emacs
+lisp. Hence, the name: Mjolnir + Emacs.
+
+This project is currently just a proof of concept. Not even alpha quality.
+
+* Feedback
+
+This is my first swift project so any (constructive!) feedback would be
+welcomed!

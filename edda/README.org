@@ -1,0 +1,4 @@
+#+TITLE: Edda
+
+The swift library interacting with macOS and exporting its symbols to C. Name
+taken from [[https://en.wikipedia.org/wiki/Poetic_Edda][Poetic Edda]], one of the first works to mention Thor.
