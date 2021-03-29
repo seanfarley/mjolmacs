@@ -8,6 +8,7 @@ let package = Package(
     products: [
         .library(
             name: "edda",
+            type: .dynamic,
             targets: ["edda"]),
     ],
     dependencies: [
