@@ -3,7 +3,7 @@
 *.log
 tmp/
 
-edda.h
+edda-Swift.h
 
 .build
 Packages
