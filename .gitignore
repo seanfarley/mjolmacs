@@ -9,3 +9,4 @@ edda-Swift.h
 Packages
 *.xcodeproj
 xcuserdata/
+*.framework
