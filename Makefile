@@ -1,5 +1,5 @@
 DEBUG=-g
-CFLAGS=-Wall -Wextra -framework Foundation
+CFLAGS=-I/usr/local/include -Wall -Wextra -framework Foundation
 LDFLAGS=-L./DDHotKey -lhotkey -Xlinker -rpath -Xlinker @rpath/DDHotKey
 
 .PHONY: DDHotKey all mjolmacs clean

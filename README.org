@@ -8,6 +8,15 @@ lisp. Hence, the name: Mjolnir + Emacs.
 
 This project is currently just a proof of concept. Not even alpha quality.
 
+* LSP
+
+Using [[https://github.com/rizsotto/Bear][bear]] should work for LSP integration:
+
+#+begin_src sh
+brew install bear
+bear -- make
+#+end_src
+
 * Feedback
 
 Any (constructive!) feedback would be welcomed! Especially feedback about
