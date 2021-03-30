@@ -16,6 +16,25 @@ Fmjolmacs_double (emacs_env *env,
   return env->make_integer (env, mjDouble(x));
 }
 
+static emacs_value
+Fmjolmacs_register (emacs_env *env,
+                    __attribute__((unused)) ptrdiff_t nargs,
+                    emacs_value args[],
+                    __attribute__((unused)) void *data)
+{
+  ptrdiff_t len = 0;
+  env->copy_string_contents(env, args[0], NULL, &len);
+
+  // TODO handle NULL
+  char *kb_buf = malloc(len);
+  env->copy_string_contents(env, args[0], kb_buf, &len);
+
+  mjRegisterKeybind(kb_buf);
+  free(kb_buf);
+
+  return env->intern(env, "t");
+}
+
 /* Bind NAME to FUN.  */
 static void
 bind_function (emacs_env *env, const char *name, emacs_value Sfun)
@@ -60,12 +79,19 @@ emacs_module_init (struct emacs_runtime *ert)
               "doc",            /* docstring */
               NULL              /* user pointer of your choice (data param in Fmjolmacs_double) */
   );
-
   bind_function (env, "mjolmacs-double", fun);
-  provide (env, "mjolmacs");
 
-  // register test keybinding
-  mjRegisterKeybind();
+  /* create a lambda (returns an emacs_value) */
+  fun = env->make_function (env,
+              1,                  /* min. number of arguments */
+              1,                  /* max. number of arguments */
+              Fmjolmacs_register, /* actual function pointer */
+              "doc",              /* docstring */
+              NULL                /* user pointer of your choice (data param in Fmjolmacs_double) */
+  );
+
+  bind_function (env, "mjolmacs-register", fun);
+  provide (env, "mjolmacs");
 
   /* loaded successfully */
   return 0;
