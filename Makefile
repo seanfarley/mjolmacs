@@ -1,7 +1,7 @@
 MAC_LIB = edda
 MAC_LIB_BUILD_PATH = $(MAC_LIB)/.build/debug/$(MAC_LIB).build
 DEBUG=-g
-CFLAGS=-Wall -Wextra
+CFLAGS=-Wall -Wextra -framework Foundation
 LDFLAGS=-L. -l$(MAC_LIB) -Xlinker -rpath -Xlinker .
 
 .PHONY: $(MAC_LIB) all mjolmacs
