@@ -9,10 +9,11 @@ int plugin_is_GPL_compatible;
 static emacs_value
 Fmjolmacs_double (emacs_env *env,
                   __attribute__((unused)) ptrdiff_t nargs,
-                  __attribute__((unused)) emacs_value args[],
+                  emacs_value args[],
                   __attribute__((unused)) void *data)
 {
-  return env->make_integer (env, mjDouble(9));
+  NSInteger x = env->extract_integer(env, args[0]);
+  return env->make_integer (env, mjDouble(x));
 }
 
 /* Bind NAME to FUN.  */
@@ -53,8 +54,8 @@ emacs_module_init (struct emacs_runtime *ert)
 
   /* create a lambda (returns an emacs_value) */
   emacs_value fun = env->make_function (env,
-              0,                /* min. number of arguments */
-              0,                /* max. number of arguments */
+              1,                /* min. number of arguments */
+              1,                /* max. number of arguments */
               Fmjolmacs_double, /* actual function pointer */
               "doc",            /* docstring */
               NULL              /* user pointer of your choice (data param in Fmjolmacs_double) */
