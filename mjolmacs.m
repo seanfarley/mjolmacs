@@ -64,6 +64,9 @@ emacs_module_init (struct emacs_runtime *ert)
   bind_function (env, "mjolmacs-double", fun);
   provide (env, "mjolmacs");
 
+  // register test keybinding
+  mjRegisterKeybind();
+
   /* loaded successfully */
   return 0;
 }
