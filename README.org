@@ -10,5 +10,5 @@ This project is currently just a proof of concept. Not even alpha quality.
 
 * Feedback
 
-This is my first swift project so any (constructive!) feedback would be
-welcomed!
+Any (constructive!) feedback would be welcomed! Especially feedback about
+Objective-C and macOS integration!

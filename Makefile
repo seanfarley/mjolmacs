@@ -1,28 +1,17 @@
-MAC_LIB = edda
-MAC_LIB_BUILD_PATH = $(MAC_LIB)/.build/debug/$(MAC_LIB).build
 DEBUG=-g
 CFLAGS=-Wall -Wextra -framework Foundation
-LDFLAGS=-L. -l$(MAC_LIB) -Xlinker -rpath -Xlinker .
+LDFLAGS=-L./DDHotKey -lhotkey -Xlinker -rpath -Xlinker @rpath/DDHotKey
 
-.PHONY: $(MAC_LIB) all mjolmacs
+.PHONY: DDHotKey all mjolmacs clean
 
 all: mjolmacs
 
-mjolmacs: $(MAC_LIB)/$(MAC_LIB)-Swift.h
-	$(CC) $(DEBUG) $(CFLAGS) $(LDFLAGS) -dynamiclib -o $@.so $@.m
+DDHotKey/libhotkey.so:
+	$(MAKE) -C DDHotKey
 
-$(MAC_LIB):
-	swift build --package-path $@
-	cp $(MAC_LIB_BUILD_PATH)/../lib$(MAC_LIB).dylib .
-
-$(MAC_LIB_BUILD_PATH)/$(MAC_LIB)-Swift.h: $(MAC_LIB)
-
-$(MAC_LIB)/$(MAC_LIB)-Swift.h: $(MAC_LIB_BUILD_PATH)/$(MAC_LIB)-Swift.h
-	cp $< $@
-
-$(MAC_LIB).m:
+mjolmacs: DDHotKey/libhotkey.so
+	$(CC) $(DEBUG) $(CFLAGS) $(LDFLAGS) -shared -o $@.so $@.m
 
 clean:
-	@$(RM) -r $(TARGET) $(OBJS) $(DEPS) *.dylib *.so *.dSYM a.out *.o
-	@$(RM) -r $(MAC_LIB)/.build
-	@$(RM) $(MAC_LIB)/$(MAC_LIB)-Swift.h
+	$(MAKE) -C DDHotKey clean
+	@$(RM) -r $(TARGET) $(OBJS) $(DEPS) *.dylib *.so *.dSYM a.out *.o *.framework

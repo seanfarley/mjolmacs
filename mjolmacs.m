@@ -1,20 +1,10 @@
+#import <Carbon/Carbon.h>
 #import <emacs-module.h>
 
-#import "edda/edda-Swift.h"
+#import "DDHotKey/DDHotKeyCenter.h"
 
 /* Declare mandatory GPL symbol.  */
 int plugin_is_GPL_compatible;
-
-/* New emacs lisp function. All function exposed to Emacs must have this prototype. */
-static emacs_value
-Fmjolmacs_double (emacs_env *env,
-                  __attribute__((unused)) ptrdiff_t nargs,
-                  emacs_value args[],
-                  __attribute__((unused)) void *data)
-{
-  NSInteger x = env->extract_integer(env, args[0]);
-  return env->make_integer (env, mjDouble(x));
-}
 
 static emacs_value
 Fmjolmacs_register (emacs_env *env,
@@ -29,7 +19,25 @@ Fmjolmacs_register (emacs_env *env,
   char *kb_buf = malloc(len);
   env->copy_string_contents(env, args[0], kb_buf, &len);
 
-  mjRegisterKeybind(kb_buf);
+  // "⌘A"
+  DDHotKeyCenter *c = [DDHotKeyCenter sharedHotKeyCenter];
+
+  int theAnswer = 42;
+
+  DDHotKeyTask task = ^(NSEvent *hkEvent) {
+    NSLog(@"Firing block hotkey");
+    NSLog(@"Hotkey event: %@", hkEvent);
+    NSLog(@"the answer is: %d", theAnswer);
+  };
+
+  if ([c registerHotKeyWithKeyCode:kVK_ANSI_A
+                     modifierFlags:NSEventModifierFlagCommand
+                              task:task]) {
+    NSLog(@"Registered: %@", [c registeredHotKeys]);
+  } else {
+    NSLog(@"Unable to register hotkey for emacs example");
+  }
+
   free(kb_buf);
 
   return env->intern(env, "t");
@@ -73,16 +81,6 @@ emacs_module_init (struct emacs_runtime *ert)
 
   /* create a lambda (returns an emacs_value) */
   emacs_value fun = env->make_function (env,
-              1,                /* min. number of arguments */
-              1,                /* max. number of arguments */
-              Fmjolmacs_double, /* actual function pointer */
-              "doc",            /* docstring */
-              NULL              /* user pointer of your choice (data param in Fmjolmacs_double) */
-  );
-  bind_function (env, "mjolmacs-double", fun);
-
-  /* create a lambda (returns an emacs_value) */
-  fun = env->make_function (env,
               1,                  /* min. number of arguments */
               1,                  /* max. number of arguments */
               Fmjolmacs_register, /* actual function pointer */
