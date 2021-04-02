@@ -10,4 +10,4 @@ libhotkey.so:
 	$(CC) $(DEBUG) $(CFLAGS) $(LDFLAGS) -shared -o $@ *.m
 
 clean:
-	@$(RM) -r $(TARGET) $(OBJS) $(DEPS) *.dylib *.so *.dSYM a.out *.o
+	$(RM) -r $(TARGET) $(OBJS) $(DEPS) *.dylib *.so *.dSYM a.out *.o

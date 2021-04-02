@@ -14,4 +14,4 @@ mjolmacs: DDHotKey/libhotkey.so
 
 clean:
 	$(MAKE) -C DDHotKey clean
-	@$(RM) -r $(TARGET) $(OBJS) $(DEPS) *.dylib *.so *.dSYM a.out *.o *.framework
+	$(RM) -r $(TARGET) $(OBJS) $(DEPS) *.dylib *.so *.dSYM a.out *.o *.framework
