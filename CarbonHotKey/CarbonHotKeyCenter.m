@@ -278,7 +278,7 @@ OSStatus carbon_hotKeyHandler(EventHandlerCallRef nextHandler,
         CarbonHotKey *matchingHotKey = [matchingHotKeys anyObject];
         
         NSEvent *event = [NSEvent eventWithEventRef:theEvent];
-        NSEvent *keyEvent = [NSEvent keyEventWithType:NSKeyUp
+        NSEvent *keyEvent = [NSEvent keyEventWithType:NSEventTypeKeyUp
                                              location:[event locationInWindow]
                                         modifierFlags:[event modifierFlags]
                                             timestamp:[event timestamp]
