@@ -89,10 +89,7 @@ OSStatus carbon_hotKeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent
 
 - (void)invokeWithEvent:(NSEvent *)event {
     if (_target != nil && _action != nil && [_target respondsToSelector:_action]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
         [_target performSelector:_action withObject:event withObject:_object];
-#pragma clang diagnostic pop
     } else if (_task != nil) {
         _task(event);
     }
