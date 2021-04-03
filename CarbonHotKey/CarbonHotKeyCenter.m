@@ -56,6 +56,7 @@ OSStatus carbon_hotKeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent
 
 - (void) dealloc {
     [[CarbonHotKeyCenter sharedHotKeyCenter] unregisterHotKey:self];
+    [super dealloc];
 }
 
 - (NSUInteger)hash {
