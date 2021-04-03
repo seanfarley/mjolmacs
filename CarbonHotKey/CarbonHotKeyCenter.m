@@ -191,7 +191,9 @@ static CarbonHotKeyCenter *sharedHotKeyCenter = nil;
 
 - (CarbonHotKey *)registerHotKeyWithKeyCode:(unsigned short)keyCode modifierFlags:(NSUInteger)flags task:(CarbonHotKeyTask)task {
     //we can't add a new hotkey if something already has this combo
-    if ([self hasRegisteredHotKeyWithKeyCode:keyCode modifierFlags:flags]) { return NO; }
+    if ([self hasRegisteredHotKeyWithKeyCode:keyCode modifierFlags:flags]) {
+        return nil;
+    }
     
     CarbonHotKey *newHotKey = [[CarbonHotKey alloc] init];
     [newHotKey _setTask:task];
@@ -203,7 +205,9 @@ static CarbonHotKeyCenter *sharedHotKeyCenter = nil;
 
 - (CarbonHotKey *)registerHotKeyWithKeyCode:(unsigned short)keyCode modifierFlags:(NSUInteger)flags target:(id)target action:(SEL)action object:(id)object {
     //we can't add a new hotkey if something already has this combo
-    if ([self hasRegisteredHotKeyWithKeyCode:keyCode modifierFlags:flags]) { return NO; }
+    if ([self hasRegisteredHotKeyWithKeyCode:keyCode modifierFlags:flags]) {
+        return nil;
+    }
     
     //build the hotkey object:
     CarbonHotKey *newHotKey = [[CarbonHotKey alloc] init];
