@@ -136,7 +136,7 @@ static CarbonHotKeyCenter *sharedHotKeyCenter = nil;
 }
 
 - (NSSet *)hotKeysMatching:(BOOL(^)(CarbonHotKey *hotkey))matcher {
-    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, __attribute__((unused)) NSDictionary *bindings) {
         return matcher(evaluatedObject);
     }];
     return [_registeredHotKeys filteredSetUsingPredicate:predicate];
@@ -262,9 +262,9 @@ static CarbonHotKeyCenter *sharedHotKeyCenter = nil;
 
 @end
 
-OSStatus carbon_hotKeyHandler(EventHandlerCallRef nextHandler,
+OSStatus carbon_hotKeyHandler(__attribute__((unused)) EventHandlerCallRef nextHandler,
                               EventRef theEvent,
-                              void *userData) {
+                              __attribute__((unused)) void *userData) {
     @autoreleasepool {
         EventHotKeyID hotKeyID;
         GetEventParameter(theEvent, kEventParamDirectObject, typeEventHotKeyID, NULL, sizeof(hotKeyID), NULL, &hotKeyID);
