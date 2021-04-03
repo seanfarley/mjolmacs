@@ -1,17 +1,17 @@
 DEBUG=-g
 CFLAGS=-I/usr/local/include -Wall -Wextra -framework Foundation
-LDFLAGS=-L./DDHotKey -lhotkey -Xlinker -rpath -Xlinker @rpath/DDHotKey
+LDFLAGS=-L./CarbonHotKey -lhotkey -Xlinker -rpath -Xlinker @rpath/CarbonHotKey
 
-.PHONY: DDHotKey all mjolmacs-module clean
+.PHONY: CarbonHotKey all mjolmacs-module clean
 
 all: mjolmacs-module
 
-DDHotKey/libhotkey.so:
-	$(MAKE) -C DDHotKey
+CarbonHotKey/libhotkey.so:
+	$(MAKE) -C CarbonHotKey
 
-mjolmacs-module: DDHotKey/libhotkey.so
+mjolmacs-module: CarbonHotKey/libhotkey.so
 	$(CC) $(DEBUG) $(CFLAGS) $(LDFLAGS) -shared -o $@.so $@.m
 
 clean:
-	$(MAKE) -C DDHotKey clean
+	$(MAKE) -C CarbonHotKey clean
 	$(RM) -r $(TARGET) $(OBJS) $(DEPS) *.dylib *.so *.dSYM a.out *.o *.framework

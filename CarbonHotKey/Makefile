@@ -1,8 +1,8 @@
 DEBUG=-g
 CFLAGS=-Wall -Wextra -framework Carbon -framework Cocoa
-LDFLAGS=-Xlinker -install_name -Xlinker DDHotKey/libhotkey.so
+LDFLAGS=-Xlinker -install_name -Xlinker CarbonHotKey/libhotkey.so
 
-.PHONY: all
+.PHONY: all clean
 
 all: libhotkey.so
 

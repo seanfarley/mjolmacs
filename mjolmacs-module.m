@@ -2,7 +2,7 @@
 #import <Carbon/Carbon.h>
 #import <emacs-module.h>
 
-#import "DDHotKey/DDHotKeyCenter.h"
+#import "CarbonHotKey/CarbonHotKeyCenter.h"
 
 /* Declare mandatory GPL symbol.  */
 int plugin_is_GPL_compatible;
@@ -16,7 +16,7 @@ Fmjolmacs_start (emacs_env *env,
                  emacs_value args[],
                  __attribute__((unused)) void *data)
 {
-  DDHotKeyCenter *c = [DDHotKeyCenter sharedHotKeyCenter];
+  CarbonHotKeyCenter *c = [CarbonHotKeyCenter sharedHotKeyCenter];
 
   fd = env->open_channel(env, args[0]);
 
@@ -36,7 +36,7 @@ Fmjolmacs_start (emacs_env *env,
   // TODO create a user struct
   // free(kb_buf);
 
-  DDHotKeyTask task = ^(NSEvent *hkEvent) {
+  CarbonHotKeyTask task = ^(NSEvent *hkEvent) {
     NSLog(@"Firing block hotkey");
     NSLog(@"Hotkey event: %@", hkEvent);
     char c1[] = "LEEEEEEROY!!!!!!";
@@ -73,11 +73,11 @@ Fmjolmacs_register (emacs_env *env,
   char *kb_buf = malloc(len);
   env->copy_string_contents(env, args[0], kb_buf, &len);
 
-  DDHotKeyCenter *c = [DDHotKeyCenter sharedHotKeyCenter];
+  CarbonHotKeyCenter *c = [CarbonHotKeyCenter sharedHotKeyCenter];
 
   int theAnswer = 42;
 
-  DDHotKeyTask task = ^(NSEvent *hkEvent) {
+  CarbonHotKeyTask task = ^(NSEvent *hkEvent) {
     NSLog(@"Firing block hotkey");
     NSLog(@"Hotkey event: %@", hkEvent);
     NSLog(@"the answer is: %d", theAnswer);

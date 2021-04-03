@@ -1,19 +1,27 @@
 /*
- DDHotKey -- DDHotKeyUtilities.m
+ CarbonHotKey -- CarbonHotKeyUtilities.m
  
- Copyright (c) Dave DeLong <http://www.davedelong.com>
+ Copyright (c) 2010-2015 Dave DeLong <https://www.davedelong.com>
+ Copyright (c) 2021 Sean Farley <https://farley.io>
+
+ Permission to use, copy, modify, and/or distribute this software for any
+ purpose with or without fee is hereby granted, provided that the above
+ copyright notice and this permission notice appear in all copies.
  
- Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
- 
- The software is  provided "as is", without warranty of any kind, including all implied warranties of merchantability and fitness. In no event shall the author(s) or copyright holder(s) be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software.
+ The software is provided "as is", without warranty of any kind, including all
+ implied warranties of merchantability and fitness. In no event shall the
+ author(s) or copyright holder(s) be liable for any claim, damages, or other
+ liability, whether in an action of contract, tort, or otherwise, arising from,
+ out of, or in connection with the software or the use or other dealings in the
+ software.
  */
 
-#import "DDHotKeyUtilities.h"
+#import "CarbonHotKeyUtilities.h"
 #import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 
-static NSDictionary *_DDKeyCodeToCharacterMap(void);
-static NSDictionary *_DDKeyCodeToCharacterMap(void) {
+static NSDictionary *_CarbonKeyCodeToCharacterMap(void);
+static NSDictionary *_CarbonKeyCodeToCharacterMap(void) {
     static NSDictionary *keyCodeMap = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -70,9 +78,9 @@ static NSDictionary *_DDKeyCodeToCharacterMap(void) {
     return keyCodeMap;
 }
 
-NSString *DDStringFromKeyCode(unsigned short keyCode, NSUInteger modifiers) {
+NSString *CarbonStringFromKeyCode(unsigned short keyCode, NSUInteger modifiers) {
     NSMutableString *final = [NSMutableString stringWithString:@""];
-    NSDictionary *characterMap = _DDKeyCodeToCharacterMap();
+    NSDictionary *characterMap = _CarbonKeyCodeToCharacterMap();
     
     if (modifiers & NSEventModifierFlagControl) {
         [final appendString:[characterMap objectForKey:@(kVK_Control)]];
@@ -114,7 +122,7 @@ NSString *DDStringFromKeyCode(unsigned short keyCode, NSUInteger modifiers) {
             UniCharCount actualStringLength = 0;
             UniChar unicodeString[maxStringLength];
             
-            UInt32 keyModifiers = DDCarbonModifierFlagsFromCocoaModifiers(modifiers);
+            UInt32 keyModifiers = CarbonModifierFlagsFromCocoaModifiers(modifiers);
             
             OSStatus status = UCKeyTranslate(keyboardLayout,
                                              keyCode, kUCKeyActionDown, keyModifiers,
@@ -134,7 +142,7 @@ NSString *DDStringFromKeyCode(unsigned short keyCode, NSUInteger modifiers) {
     return final;
 }
 
-UInt32 DDCarbonModifierFlagsFromCocoaModifiers(NSUInteger flags) {
+UInt32 CarbonModifierFlagsFromCocoaModifiers(NSUInteger flags) {
     UInt32 newFlags = 0;
     if ((flags & NSEventModifierFlagControl) > 0) { newFlags |= controlKey; }
     if ((flags & NSEventModifierFlagCommand) > 0) { newFlags |= cmdKey; }

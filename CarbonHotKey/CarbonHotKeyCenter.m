@@ -1,26 +1,34 @@
 /*
- DDHotKey -- DDHotKeyCenter.m
+ CarbonHotKey -- CarbonHotKeyCenter.m
  
- Copyright (c) Dave DeLong <http://www.davedelong.com>
+ Copyright (c) 2010-2015 Dave DeLong <https://www.davedelong.com>
+ Copyright (c) 2021 Sean Farley <https://farley.io>
  
- Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
+ Permission to use, copy, modify, and/or distribute this software for any
+ purpose with or without fee is hereby granted, provided that the above
+ copyright notice and this permission notice appear in all copies.
  
- The software is  provided "as is", without warranty of any kind, including all implied warranties of merchantability and fitness. In no event shall the author(s) or copyright holder(s) be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software.
+ The software is provided "as is", without warranty of any kind, including all
+ implied warranties of merchantability and fitness. In no event shall the
+ author(s) or copyright holder(s) be liable for any claim, damages, or other
+ liability, whether in an action of contract, tort, or otherwise, arising from,
+ out of, or in connection with the software or the use or other dealings in the
+ software.
  */
 
 #import <Carbon/Carbon.h>
 #import <objc/runtime.h>
 
-#import "DDHotKeyCenter.h"
-#import "DDHotKeyUtilities.h"
+#import "CarbonHotKeyCenter.h"
+#import "CarbonHotKeyUtilities.h"
 
 #pragma mark Private Global Declarations
 
-OSStatus dd_hotKeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData);
+OSStatus carbon_hotKeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData);
 
-#pragma mark DDHotKey
+#pragma mark CarbonHotKey
 
-@interface DDHotKey ()
+@interface CarbonHotKey ()
 
 @property (nonatomic, retain) NSValue *hotKeyRef;
 @property (nonatomic) UInt32 hotKeyID;
@@ -29,17 +37,17 @@ OSStatus dd_hotKeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent, vo
 @property (nonatomic, assign, setter = _setTarget:) id target;
 @property (nonatomic, setter = _setAction:) SEL action;
 @property (nonatomic, strong, setter = _setObject:) id object;
-@property (nonatomic, copy, setter = _setTask:) DDHotKeyTask task;
+@property (nonatomic, copy, setter = _setTask:) CarbonHotKeyTask task;
 
 @property (nonatomic, setter = _setKeyCode:) unsigned short keyCode;
 @property (nonatomic, setter = _setModifierFlags:) NSUInteger modifierFlags;
 
 @end
 
-@implementation DDHotKey
+@implementation CarbonHotKey
 
-+ (instancetype)hotKeyWithKeyCode:(unsigned short)keyCode modifierFlags:(NSUInteger)flags task:(DDHotKeyTask)task {
-    DDHotKey *newHotKey = [[self alloc] init];
++ (instancetype)hotKeyWithKeyCode:(unsigned short)keyCode modifierFlags:(NSUInteger)flags task:(CarbonHotKeyTask)task {
+    CarbonHotKey *newHotKey = [[self alloc] init];
     [newHotKey _setTask:task];
     [newHotKey _setKeyCode:keyCode];
     [newHotKey _setModifierFlags:flags];
@@ -47,7 +55,7 @@ OSStatus dd_hotKeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent, vo
 }
 
 - (void) dealloc {
-    [[DDHotKeyCenter sharedHotKeyCenter] unregisterHotKey:self];
+    [[CarbonHotKeyCenter sharedHotKeyCenter] unregisterHotKey:self];
 }
 
 - (NSUInteger)hash {
@@ -56,7 +64,7 @@ OSStatus dd_hotKeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent, vo
 
 - (BOOL)isEqual:(id)object {
     BOOL equal = NO;
-    if ([object isKindOfClass:[DDHotKey class]]) {
+    if ([object isKindOfClass:[CarbonHotKey class]]) {
         equal = ([object keyCode] == [self keyCode]);
         equal &= ([object modifierFlags] == [self modifierFlags]);
     }
@@ -91,11 +99,11 @@ OSStatus dd_hotKeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent, vo
 
 @end
 
-#pragma mark DDHotKeyCenter
+#pragma mark CarbonHotKeyCenter
 
-static DDHotKeyCenter *sharedHotKeyCenter = nil;
+static CarbonHotKeyCenter *sharedHotKeyCenter = nil;
 
-@implementation DDHotKeyCenter {
+@implementation CarbonHotKeyCenter {
     NSMutableSet *_registeredHotKeys;
     UInt32 _nextHotKeyID;
 }
@@ -106,10 +114,10 @@ static DDHotKeyCenter *sharedHotKeyCenter = nil;
         sharedHotKeyCenter = [super allocWithZone:nil];
         sharedHotKeyCenter = [sharedHotKeyCenter init];
         
-		EventTypeSpec eventSpec;
-		eventSpec.eventClass = kEventClassKeyboard;
-		eventSpec.eventKind = kEventHotKeyReleased;
-		InstallApplicationEventHandler(&dd_hotKeyHandler, 1, &eventSpec, NULL, NULL);
+        EventTypeSpec eventSpec;
+        eventSpec.eventClass = kEventClassKeyboard;
+        eventSpec.eventKind = kEventHotKeyReleased;
+        InstallApplicationEventHandler(&carbon_hotKeyHandler, 1, &eventSpec, NULL, NULL);
     });
     return sharedHotKeyCenter;
 }
@@ -129,7 +137,7 @@ static DDHotKeyCenter *sharedHotKeyCenter = nil;
     return self;
 }
 
-- (NSSet *)hotKeysMatching:(BOOL(^)(DDHotKey *hotkey))matcher {
+- (NSSet *)hotKeysMatching:(BOOL(^)(CarbonHotKey *hotkey))matcher {
     NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
         return matcher(evaluatedObject);
     }];
@@ -137,12 +145,12 @@ static DDHotKeyCenter *sharedHotKeyCenter = nil;
 }
 
 - (BOOL)hasRegisteredHotKeyWithKeyCode:(unsigned short)keyCode modifierFlags:(NSUInteger)flags {
-    return [self hotKeysMatching:^BOOL(DDHotKey *hotkey) {
+    return [self hotKeysMatching:^BOOL(CarbonHotKey *hotkey) {
         return hotkey.keyCode == keyCode && hotkey.modifierFlags == flags;
     }].count > 0;
 }
 
-- (DDHotKey *)_registerHotKey:(DDHotKey *)hotKey {
+- (CarbonHotKey *)_registerHotKey:(CarbonHotKey *)hotKey {
     if ([_registeredHotKeys containsObject:hotKey]) {
         return hotKey;
     }
@@ -152,7 +160,7 @@ static DDHotKeyCenter *sharedHotKeyCenter = nil;
     keyID.id = _nextHotKeyID;
     
     EventHotKeyRef carbonHotKey;
-    UInt32 flags = DDCarbonModifierFlagsFromCocoaModifiers([hotKey modifierFlags]);
+    UInt32 flags = CarbonModifierFlagsFromCocoaModifiers([hotKey modifierFlags]);
     OSStatus err = RegisterEventHotKey([hotKey keyCode], flags, keyID, GetEventDispatcherTarget(), 0, &carbonHotKey);
     
     //error registering hot key
@@ -168,11 +176,11 @@ static DDHotKeyCenter *sharedHotKeyCenter = nil;
     return hotKey;
 }
 
-- (DDHotKey *)registerHotKey:(DDHotKey *)hotKey {
+- (CarbonHotKey *)registerHotKey:(CarbonHotKey *)hotKey {
     return [self _registerHotKey:hotKey];
 }
 
-- (void)unregisterHotKey:(DDHotKey *)hotKey {
+- (void)unregisterHotKey:(CarbonHotKey *)hotKey {
     NSValue *hotKeyRef = [hotKey hotKeyRef];
     if (hotKeyRef) {
         EventHotKeyRef carbonHotKey = (EventHotKeyRef)[hotKeyRef pointerValue];
@@ -183,11 +191,11 @@ static DDHotKeyCenter *sharedHotKeyCenter = nil;
     [_registeredHotKeys removeObject:hotKey];
 }
 
-- (DDHotKey *)registerHotKeyWithKeyCode:(unsigned short)keyCode modifierFlags:(NSUInteger)flags task:(DDHotKeyTask)task {
+- (CarbonHotKey *)registerHotKeyWithKeyCode:(unsigned short)keyCode modifierFlags:(NSUInteger)flags task:(CarbonHotKeyTask)task {
     //we can't add a new hotkey if something already has this combo
     if ([self hasRegisteredHotKeyWithKeyCode:keyCode modifierFlags:flags]) { return NO; }
     
-    DDHotKey *newHotKey = [[DDHotKey alloc] init];
+    CarbonHotKey *newHotKey = [[CarbonHotKey alloc] init];
     [newHotKey _setTask:task];
     [newHotKey _setKeyCode:keyCode];
     [newHotKey _setModifierFlags:flags];
@@ -195,12 +203,12 @@ static DDHotKeyCenter *sharedHotKeyCenter = nil;
     return [self _registerHotKey:newHotKey];
 }
 
-- (DDHotKey *)registerHotKeyWithKeyCode:(unsigned short)keyCode modifierFlags:(NSUInteger)flags target:(id)target action:(SEL)action object:(id)object {
+- (CarbonHotKey *)registerHotKeyWithKeyCode:(unsigned short)keyCode modifierFlags:(NSUInteger)flags target:(id)target action:(SEL)action object:(id)object {
     //we can't add a new hotkey if something already has this combo
     if ([self hasRegisteredHotKeyWithKeyCode:keyCode modifierFlags:flags]) { return NO; }
     
     //build the hotkey object:
-    DDHotKey *newHotKey = [[DDHotKey alloc] init];
+    CarbonHotKey *newHotKey = [[CarbonHotKey alloc] init];
     [newHotKey _setTarget:target];
     [newHotKey _setAction:action];
     [newHotKey _setObject:object];
@@ -209,61 +217,63 @@ static DDHotKeyCenter *sharedHotKeyCenter = nil;
     return [self _registerHotKey:newHotKey];
 }
 
-- (void)unregisterHotKeysMatching:(BOOL(^)(DDHotKey *hotkey))matcher {
+- (void)unregisterHotKeysMatching:(BOOL(^)(CarbonHotKey *hotkey))matcher {
     //explicitly unregister the hotkey, since relying on the unregistration in -dealloc can be problematic
     @autoreleasepool {
         NSSet *matches = [self hotKeysMatching:matcher];
-        for (DDHotKey *hotKey in matches) {
+        for (CarbonHotKey *hotKey in matches) {
             [self unregisterHotKey:hotKey];
         }
     }
 }
 
 - (void)unregisterHotKeysWithTarget:(id)target {
-    [self unregisterHotKeysMatching:^BOOL(DDHotKey *hotkey) {
+    [self unregisterHotKeysMatching:^BOOL(CarbonHotKey *hotkey) {
         return hotkey.target == target;
     }];
 }
 
 - (void)unregisterHotKeysWithTarget:(id)target action:(SEL)action {
-    [self unregisterHotKeysMatching:^BOOL(DDHotKey *hotkey) {
+    [self unregisterHotKeysMatching:^BOOL(CarbonHotKey *hotkey) {
         return hotkey.target == target && sel_isEqual(hotkey.action, action);
     }];
 }
 
 - (void)unregisterHotKeyWithKeyCode:(unsigned short)keyCode modifierFlags:(NSUInteger)flags {
-    [self unregisterHotKeysMatching:^BOOL(DDHotKey *hotkey) {
+    [self unregisterHotKeysMatching:^BOOL(CarbonHotKey *hotkey) {
         return hotkey.keyCode == keyCode && hotkey.modifierFlags == flags;
     }];
 }
 
 - (void)unregisterAllHotKeys {
     NSSet *keys = [_registeredHotKeys copy];
-    for (DDHotKey *key in keys) {
+    for (CarbonHotKey *key in keys) {
         [self unregisterHotKey:key];
     }
 }
 
 - (NSSet *)registeredHotKeys {
-    return [self hotKeysMatching:^BOOL(DDHotKey *hotkey) {
+    return [self hotKeysMatching:^BOOL(CarbonHotKey *hotkey) {
         return hotkey.hotKeyRef != NULL;
     }];
 }
 
 @end
 
-OSStatus dd_hotKeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData) {
+OSStatus carbon_hotKeyHandler(EventHandlerCallRef nextHandler,
+                              EventRef theEvent,
+                              void *userData) {
     @autoreleasepool {
         EventHotKeyID hotKeyID;
         GetEventParameter(theEvent, kEventParamDirectObject, typeEventHotKeyID, NULL, sizeof(hotKeyID), NULL, &hotKeyID);
         
         UInt32 keyID = hotKeyID.id;
         
-        NSSet *matchingHotKeys = [[DDHotKeyCenter sharedHotKeyCenter] hotKeysMatching:^BOOL(DDHotKey *hotkey) {
+        NSSet *matchingHotKeys = [[CarbonHotKeyCenter sharedHotKeyCenter] hotKeysMatching:^BOOL(CarbonHotKey *hotkey) {
             return hotkey.hotKeyID == keyID;
         }];
         if ([matchingHotKeys count] > 1) { NSLog(@"ERROR!"); }
-        DDHotKey *matchingHotKey = [matchingHotKeys anyObject];
+        CarbonHotKey *matchingHotKey = [matchingHotKeys anyObject];
         
         NSEvent *event = [NSEvent eventWithEventRef:theEvent];
         NSEvent *keyEvent = [NSEvent keyEventWithType:NSKeyUp
