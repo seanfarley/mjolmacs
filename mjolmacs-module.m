@@ -50,7 +50,6 @@ Fmjolmacs_start (emacs_env *env,
                      modifierFlags:NSEventModifierFlagCommand
                               task:task
   ]) {
-  // if ([c registerHotKey:hk]) {
     NSLog(@"Registered: %@", [c registeredHotKeys]);
   } else {
     NSLog(@"Unable to register hotkey for emacs example");
