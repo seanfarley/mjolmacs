@@ -1,14 +1,48 @@
-#include "emacs-module.h"
-#import <Carbon/Carbon.h>
-#import <emacs-module.h>
-
-#import "CarbonHotKey/CarbonHotKeyCenter.h"
+#import "mjolmacs-module.h"
 
 /* Declare mandatory GPL symbol.  */
 int plugin_is_GPL_compatible;
 
+@implementation MjolmacsEnv
+
+- (void) dealloc
+{
+    NSLog(@"Dealloc called");
+    [super dealloc];
+}
+
+- (void) hotkeyWithEvent:(NSEvent *)hkEvent object:(id)anObject {
+  NSLog(@"Firing -[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+  NSLog(@"Hotkey event: %@", hkEvent);
+  NSLog(@"Object: %@", anObject);
+}
+
 static int fd;
 static char *func;
+
+static emacs_value
+Fmjolmacs_show (__attribute__((unused)) emacs_env *env,
+                __attribute__((unused)) ptrdiff_t nargs,
+                __attribute__((unused)) emacs_value args[],
+                void *data)
+{
+  MjolmacsEnv *m = (MjolmacsEnv *)data;
+  [m.window makeKeyAndOrderFront: m.window];
+
+  return env->intern(env, "nil");
+}
+
+static emacs_value
+Fmjolmacs_close (__attribute__((unused)) emacs_env *env,
+                 __attribute__((unused)) ptrdiff_t nargs,
+                 __attribute__((unused)) emacs_value args[],
+                 void *data)
+{
+  MjolmacsEnv *m = (MjolmacsEnv *)data;
+  [m.window setIsVisible:NO];
+
+  return env->intern(env, "nil");
+}
 
 static emacs_value
 Fmjolmacs_start (emacs_env *env,
@@ -137,7 +171,7 @@ emacs_module_init (struct emacs_runtime *ert)
               2,               /* max. number of arguments */
               Fmjolmacs_start, /* actual function pointer */
               "doc",           /* docstring */
-              NULL             /* user pointer of your choice */
+              (void *)[[MjolmacsEnv alloc] init]             /* user pointer of your choice */
   );
   bind_function (env, "mjolmacs--start", fun);
 
@@ -151,8 +185,46 @@ emacs_module_init (struct emacs_runtime *ert)
   );
 
   bind_function (env, "mjolmacs-register", fun);
+
+  MjolmacsEnv *m = [[MjolmacsEnv alloc] init];
+  NSRect frame = NSMakeRect(100, 100, 200, 200);
+  NSUInteger styleMask = NSWindowStyleMaskBorderless;
+  NSRect rect = [NSWindow contentRectForFrameRect:frame styleMask:styleMask];
+  m.window = [[NSWindow alloc] initWithContentRect:rect
+                                         styleMask:styleMask
+                                           backing:NSBackingStoreBuffered
+                                             defer:false];
+  [m.window setBackgroundColor:[NSColor colorWithCalibratedRed:0.0
+                                                         green:0.0
+                                                          blue:1.0
+                                                         alpha:0.5]];
+
+  /* create a lambda (returns an emacs_value) */
+  fun = env->make_function (env,
+                            0,              /* min. number of arguments */
+                            0,              /* max. number of arguments */
+                            Fmjolmacs_show, /* actual function pointer */
+                            "doc",          /* docstring */
+                            m               /* user pointer of your choice (data param in Fmjolmacs_double) */
+  );
+
+  bind_function (env, "mjolmacs-show", fun);
+
+  /* create a lambda (returns an emacs_value) */
+  fun = env->make_function (env,
+                            0,              /* min. number of arguments */
+                            0,              /* max. number of arguments */
+                            Fmjolmacs_close, /* actual function pointer */
+                            "doc",          /* docstring */
+                            m               /* user pointer of your choice (data param in Fmjolmacs_double) */
+  );
+
+  bind_function (env, "mjolmacs-close", fun);
+
   provide (env, "mjolmacs-module");
 
   /* loaded successfully */
   return 0;
 }
+
+@end

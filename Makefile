@@ -1,5 +1,5 @@
 DEBUG=-g
-CFLAGS=-I/usr/local/include -Wall -Wextra -framework Foundation
+CFLAGS=-I/usr/local/include -Wall -Wextra -framework Foundation -framework AppKit
 LDFLAGS=-L./CarbonHotKey -lhotkey -Xlinker -rpath -Xlinker @rpath/CarbonHotKey
 
 .PHONY: CarbonHotKey all mjolmacs-module clean

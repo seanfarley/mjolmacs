@@ -16,6 +16,7 @@
  software.
  */
 
+#import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 
 // a convenient typedef for the required signature of a hotkey block callback

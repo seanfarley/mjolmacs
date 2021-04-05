@@ -16,7 +16,6 @@
  software.
  */
 
-#import <Carbon/Carbon.h>
 #import <objc/runtime.h>
 
 #import "CarbonHotKeyCenter.h"
