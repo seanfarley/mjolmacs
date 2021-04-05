@@ -1,6 +1,5 @@
 #import "mjolmacs-module.h"
 
-/* Declare mandatory GPL symbol.  */
 int plugin_is_GPL_compatible;
 
 @implementation MjolmacsEnv
