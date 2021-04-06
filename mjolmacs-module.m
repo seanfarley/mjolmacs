@@ -170,7 +170,7 @@ emacs_module_init (struct emacs_runtime *ert)
               2,               /* max. number of arguments */
               Fmjolmacs_start, /* actual function pointer */
               "doc",           /* docstring */
-              (void *)[[MjolmacsEnv alloc] init]             /* user pointer of your choice */
+              NULL             /* user pointer of your choice */
   );
   bind_function (env, "mjolmacs--start", fun);
 
