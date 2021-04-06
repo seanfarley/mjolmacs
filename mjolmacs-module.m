@@ -113,6 +113,17 @@ Fmjolmacs_register (emacs_env *env,
     NSLog(@"Firing block hotkey");
     NSLog(@"Hotkey event: %@", hkEvent);
     NSLog(@"the answer is: %d", theAnswer);
+    MjolmacsEnv *m = (MjolmacsEnv*)data;
+
+    BOOL vis = [m.window isVisible];
+    NSLog(@"visibility: %d", vis);
+
+    if (vis) {
+      [m.window setIsVisible:NO];
+    } else {
+      [m.window makeKeyAndOrderFront: m.window];
+      [m.window orderFrontRegardless];
+    }
   };
 
   if ([c registerHotKeyWithKeyCode:kVK_ANSI_A
@@ -174,29 +185,31 @@ emacs_module_init (struct emacs_runtime *ert)
   );
   bind_function (env, "mjolmacs--start", fun);
 
+  MjolmacsEnv *m = [[MjolmacsEnv alloc] init];
+  NSRect frame = NSMakeRect(100, 100, 200, 200);
+  NSUInteger styleMask = NSWindowStyleMaskBorderless | NSWindowStyleMaskNonactivatingPanel;
+  NSRect rect = [NSWindow contentRectForFrameRect:frame styleMask:styleMask];
+  m.window = [[NSPanel alloc] initWithContentRect:rect
+                                        styleMask:styleMask
+                                          backing:NSBackingStoreBuffered
+                                            defer:false];
+
+  [m.window setFloatingPanel:YES];
+  [m.window setBackgroundColor:[NSColor colorWithCalibratedRed:0.0
+                                                         green:0.0
+                                                          blue:1.0
+                                                         alpha:0.5]];
+
   /* create a lambda (returns an emacs_value) */
   fun = env->make_function (env,
               2,                  /* min. number of arguments */
               2,                  /* max. number of arguments */
               Fmjolmacs_register, /* actual function pointer */
               "doc",              /* docstring */
-              NULL                /* user pointer of your choice (data param in Fmjolmacs_double) */
+              m                   /* user pointer of your choice (data param in Fmjolmacs_double) */
   );
 
   bind_function (env, "mjolmacs-register", fun);
-
-  MjolmacsEnv *m = [[MjolmacsEnv alloc] init];
-  NSRect frame = NSMakeRect(100, 100, 200, 200);
-  NSUInteger styleMask = NSWindowStyleMaskBorderless;
-  NSRect rect = [NSWindow contentRectForFrameRect:frame styleMask:styleMask];
-  m.window = [[NSWindow alloc] initWithContentRect:rect
-                                         styleMask:styleMask
-                                           backing:NSBackingStoreBuffered
-                                             defer:false];
-  [m.window setBackgroundColor:[NSColor colorWithCalibratedRed:0.0
-                                                         green:0.0
-                                                          blue:1.0
-                                                         alpha:0.5]];
 
   /* create a lambda (returns an emacs_value) */
   fun = env->make_function (env,
@@ -211,11 +224,11 @@ emacs_module_init (struct emacs_runtime *ert)
 
   /* create a lambda (returns an emacs_value) */
   fun = env->make_function (env,
-                            0,              /* min. number of arguments */
-                            0,              /* max. number of arguments */
+                            0,               /* min. number of arguments */
+                            0,               /* max. number of arguments */
                             Fmjolmacs_close, /* actual function pointer */
-                            "doc",          /* docstring */
-                            m               /* user pointer of your choice (data param in Fmjolmacs_double) */
+                            "doc",           /* docstring */
+                            m                /* user pointer of your choice (data param in Fmjolmacs_double) */
   );
 
   bind_function (env, "mjolmacs-close", fun);
