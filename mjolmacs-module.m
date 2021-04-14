@@ -1,4 +1,5 @@
 #import "mjolmacs-module.h"
+#include <stdio.h>
 
 int plugin_is_GPL_compatible;
 
@@ -72,11 +73,17 @@ Fmjolmacs_start (emacs_env *env,
   CarbonHotKeyTask task = ^(NSEvent *hkEvent) {
     NSLog(@"Firing block hotkey");
     NSLog(@"Hotkey event: %@", hkEvent);
-    char c1[] = "LEEEEEEROY!!!!!!";
-    // char c2[] = "JENNNNNNKINS";
-    write(fd, c1, sizeof(c1));
+
+    NSRunningApplication* runningApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
+    pid_t pid = [runningApp processIdentifier];
+    NSLog(@"frontmost app: %d", pid);
+
+    int pid_len = snprintf(NULL, 0, "%d", pid) + 1;
+    char* pid_str = malloc(pid_len);
+    snprintf(pid_str, pid_len, "%d", pid);
+
+    write(fd, pid_str, pid_len);
     write(fd, func, len);
-    // write(fd, )
   };
 
   if ([c registerHotKeyWithKeyCode:kVK_ANSI_A
@@ -91,6 +98,26 @@ Fmjolmacs_start (emacs_env *env,
   return env->intern(env, "t");
 }
 
+static emacs_value
+Fmjolmacs_focus_pid (emacs_env *env,
+                     __attribute__((unused)) ptrdiff_t nargs,
+                     emacs_value args[],
+                     __attribute__((unused)) void *data)
+{
+  pid_t pid = env->extract_integer(env, args[0]);
+  NSLog(@"PID: %d", pid);
+
+  CFIndex appCount = [[[NSWorkspace sharedWorkspace] runningApplications] count];
+  for (CFIndex j = 0; j < appCount; j++) {
+    NSRunningApplication *app = [[[NSWorkspace sharedWorkspace] runningApplications] objectAtIndex:j];
+    if (pid == [app processIdentifier]) {
+      [app activateWithOptions:NSApplicationActivateAllWindows | NSApplicationActivateIgnoringOtherApps];
+      break;
+    }
+  }
+
+  return env->intern(env, "t");
+}
 
 static emacs_value
 Fmjolmacs_register (emacs_env *env,
@@ -113,17 +140,6 @@ Fmjolmacs_register (emacs_env *env,
     NSLog(@"Firing block hotkey");
     NSLog(@"Hotkey event: %@", hkEvent);
     NSLog(@"the answer is: %d", theAnswer);
-    MjolmacsEnv *m = (MjolmacsEnv*)data;
-
-    BOOL vis = [m.window isVisible];
-    NSLog(@"visibility: %d", vis);
-
-    if (vis) {
-      [m.window setIsVisible:NO];
-    } else {
-      [m.window makeKeyAndOrderFront: m.window];
-      [m.window orderFrontRegardless];
-    }
   };
 
   if ([c registerHotKeyWithKeyCode:kVK_ANSI_A
@@ -186,19 +202,6 @@ emacs_module_init (struct emacs_runtime *ert)
   bind_function (env, "mjolmacs--start", fun);
 
   MjolmacsEnv *m = [[MjolmacsEnv alloc] init];
-  NSRect frame = NSMakeRect(100, 100, 200, 200);
-  NSUInteger styleMask = NSWindowStyleMaskBorderless | NSWindowStyleMaskNonactivatingPanel;
-  NSRect rect = [NSWindow contentRectForFrameRect:frame styleMask:styleMask];
-  m.window = [[NSPanel alloc] initWithContentRect:rect
-                                        styleMask:styleMask
-                                          backing:NSBackingStoreBuffered
-                                            defer:false];
-
-  [m.window setFloatingPanel:YES];
-  [m.window setBackgroundColor:[NSColor colorWithCalibratedRed:0.0
-                                                         green:0.0
-                                                          blue:1.0
-                                                         alpha:0.5]];
 
   /* create a lambda (returns an emacs_value) */
   fun = env->make_function (env,
@@ -232,6 +235,17 @@ emacs_module_init (struct emacs_runtime *ert)
   );
 
   bind_function (env, "mjolmacs-close", fun);
+
+  /* create a lambda (returns an emacs_value) */
+  fun = env->make_function (env,
+                            1,               /* min. number of arguments */
+                            1,               /* max. number of arguments */
+                            Fmjolmacs_focus_pid, /* actual function pointer */
+                            "doc",           /* docstring */
+                            m                /* user pointer of your choice (data param in Fmjolmacs_double) */
+  );
+
+  bind_function (env, "mjolmacs--focus-pid", fun);
 
   provide (env, "mjolmacs-module");
 
