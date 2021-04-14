@@ -131,17 +131,17 @@ emacs_module_init (struct emacs_runtime *ert)
 {
   emacs_env *env = ert->get_environment (ert);
 
+  MjolmacsEnv *m = [[MjolmacsEnv alloc] init];
+
   /* create a lambda (returns an emacs_value) */
   emacs_value fun = env->make_function (env,
               2,               /* min. number of arguments */
               2,               /* max. number of arguments */
               Fmjolmacs_start, /* actual function pointer */
               "doc",           /* docstring */
-              NULL             /* user pointer of your choice */
+              m                /* user pointer of your choice */
   );
   bind_function (env, "mjolmacs--start", fun);
-
-  MjolmacsEnv *m = [[MjolmacsEnv alloc] init];
 
   /* create a lambda (returns an emacs_value) */
   fun = env->make_function (env,
