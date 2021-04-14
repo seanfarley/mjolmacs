@@ -21,30 +21,6 @@ static int fd;
 static char *func;
 
 static emacs_value
-Fmjolmacs_show (__attribute__((unused)) emacs_env *env,
-                __attribute__((unused)) ptrdiff_t nargs,
-                __attribute__((unused)) emacs_value args[],
-                void *data)
-{
-  MjolmacsEnv *m = (MjolmacsEnv *)data;
-  [m.window makeKeyAndOrderFront: m.window];
-
-  return env->intern(env, "nil");
-}
-
-static emacs_value
-Fmjolmacs_close (__attribute__((unused)) emacs_env *env,
-                 __attribute__((unused)) ptrdiff_t nargs,
-                 __attribute__((unused)) emacs_value args[],
-                 void *data)
-{
-  MjolmacsEnv *m = (MjolmacsEnv *)data;
-  [m.window setIsVisible:NO];
-
-  return env->intern(env, "nil");
-}
-
-static emacs_value
 Fmjolmacs_start (emacs_env *env,
                  __attribute__((unused)) ptrdiff_t nargs,
                  emacs_value args[],
@@ -119,42 +95,6 @@ Fmjolmacs_focus_pid (emacs_env *env,
   return env->intern(env, "t");
 }
 
-static emacs_value
-Fmjolmacs_register (emacs_env *env,
-                    __attribute__((unused)) ptrdiff_t nargs,
-                    emacs_value args[],
-                    __attribute__((unused)) void *data)
-{
-  ptrdiff_t len = 0;
-  env->copy_string_contents(env, args[0], NULL, &len);
-
-  // TODO handle NULL
-  char *kb_buf = malloc(len);
-  env->copy_string_contents(env, args[0], kb_buf, &len);
-
-  CarbonHotKeyCenter *c = [CarbonHotKeyCenter sharedHotKeyCenter];
-
-  int theAnswer = 42;
-
-  CarbonHotKeyTask task = ^(NSEvent *hkEvent) {
-    NSLog(@"Firing block hotkey");
-    NSLog(@"Hotkey event: %@", hkEvent);
-    NSLog(@"the answer is: %d", theAnswer);
-  };
-
-  if ([c registerHotKeyWithKeyCode:kVK_ANSI_A
-                     modifierFlags:NSEventModifierFlagCommand
-                              task:task]) {
-    NSLog(@"Registered: %@", [c registeredHotKeys]);
-  } else {
-    NSLog(@"Unable to register hotkey for emacs example");
-  }
-
-  free(kb_buf);
-
-  return env->intern(env, "t");
-}
-
 /* Bind NAME to FUN.  */
 static void
 bind_function (emacs_env *env, const char *name, emacs_value Sfun)
@@ -202,39 +142,6 @@ emacs_module_init (struct emacs_runtime *ert)
   bind_function (env, "mjolmacs--start", fun);
 
   MjolmacsEnv *m = [[MjolmacsEnv alloc] init];
-
-  /* create a lambda (returns an emacs_value) */
-  fun = env->make_function (env,
-              2,                  /* min. number of arguments */
-              2,                  /* max. number of arguments */
-              Fmjolmacs_register, /* actual function pointer */
-              "doc",              /* docstring */
-              m                   /* user pointer of your choice (data param in Fmjolmacs_double) */
-  );
-
-  bind_function (env, "mjolmacs-register", fun);
-
-  /* create a lambda (returns an emacs_value) */
-  fun = env->make_function (env,
-                            0,              /* min. number of arguments */
-                            0,              /* max. number of arguments */
-                            Fmjolmacs_show, /* actual function pointer */
-                            "doc",          /* docstring */
-                            m               /* user pointer of your choice (data param in Fmjolmacs_double) */
-  );
-
-  bind_function (env, "mjolmacs-show", fun);
-
-  /* create a lambda (returns an emacs_value) */
-  fun = env->make_function (env,
-                            0,               /* min. number of arguments */
-                            0,               /* max. number of arguments */
-                            Fmjolmacs_close, /* actual function pointer */
-                            "doc",           /* docstring */
-                            m                /* user pointer of your choice (data param in Fmjolmacs_double) */
-  );
-
-  bind_function (env, "mjolmacs-close", fun);
 
   /* create a lambda (returns an emacs_value) */
   fun = env->make_function (env,
