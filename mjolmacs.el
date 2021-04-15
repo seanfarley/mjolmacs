@@ -47,15 +47,11 @@ STRING is from mjolmacs writing via fd which comes from `open_channel'."
       (goto-char (point-max))
       (insert string)
       (goto-char 1)
-      (while (re-search-forward "\\([^\x00]*\\)\x00\\([^\x00]*\\)\x00" nil t)
-        (let ((pid (match-string 1))
-              (msg (match-string 2)))
+      (while (re-search-forward "\\([^\x00]*\\)\x00" nil t)
+        (let ((msg (match-string 1)))
           (delete-region 1 (match-end 0))
-          (message "pid: %s message: %s" pid msg)
           ;; https://emacs.stackexchange.com/questions/19877/how-to-evaluate-elisp-code-contained-in-a-string#19878
-          ;; (funcall (intern id) msg)
-          ;; (eval (read (format "(progn %s)" msg))))))))
-          (funcall (read msg) (read pid)))))))
+          (eval (read (format "(progn %s)" msg))))))))
 
 (defun mjolmacs-leeroy (&rest extra)
   "A callback test function.

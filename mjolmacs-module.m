@@ -5,10 +5,14 @@ int plugin_is_GPL_compatible;
 
 @implementation MjolmacsEnv
 
-- (void) dealloc
-{
-    NSLog(@"Dealloc called");
-    [super dealloc];
+- (id)init {
+  self = [super init];
+  if (self) {
+    funcs = [[NSMutableDictionary alloc] init];
+    pipe = nil;
+  }
+
+  return self;
 }
 
 - (void)hotkeyWithEvent:(NSEvent *)hkEvent object:(id)anObject {
@@ -18,8 +22,12 @@ int plugin_is_GPL_compatible;
   NSLog(@"Object: %@", anObject);
 }
 
-static int fd;
-static char *func;
+- (void)openChannel:(emacs_env *)env buffer:(emacs_value)buffer {
+  if (!pipe) {
+    int fd = env->open_channel(env, buffer);
+    pipe = [[NSFileHandle alloc] initWithFileDescriptor:fd];
+  }
+}
 
 static emacs_value Fmjolmacs_start(emacs_env *env,
                                    __attribute__((unused)) ptrdiff_t nargs,
@@ -27,24 +35,23 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
                                    __attribute__((unused)) void *data) {
   CarbonHotKeyCenter *c = [CarbonHotKeyCenter sharedHotKeyCenter];
 
-  fd = env->open_channel(env, args[0]);
+  MjolmacsEnv *m = data;
+  [m openChannel:env buffer:args[0]];
 
   emacs_value sym_args[] = {args[1]};
 
-  /* Make the call (2 == nb of arguments) */
   emacs_value sym =
       env->funcall(env, env->intern(env, "prin1-to-string"), 1, sym_args);
 
   ptrdiff_t len = 0;
   env->copy_string_contents(env, sym, NULL, &len);
 
-  func = malloc(len);
+  char *func = malloc(len);
   env->copy_string_contents(env, sym, func, &len);
 
-  NSLog(@"LEEROY: %s", func);
+  NSMutableString *s = [NSMutableString stringWithUTF8String:func];
 
-  // TODO create a user struct
-  // free(kb_buf);
+  NSLog(@"LEEROY: %@", s);
 
   CarbonHotKeyTask task = ^(NSEvent *hkEvent) {
     NSLog(@"Firing block hotkey");
@@ -52,15 +59,11 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
 
     NSRunningApplication *runningApp =
         [[NSWorkspace sharedWorkspace] frontmostApplication];
-    pid_t pid = [runningApp processIdentifier];
-    NSLog(@"frontmost app: %d", pid);
 
-    int pid_len = snprintf(NULL, 0, "%d", pid) + 1;
-    char *pid_str = malloc(pid_len);
-    snprintf(pid_str, pid_len, "%d", pid);
+    NSString *lisp = [NSString
+        stringWithFormat:@"(%@ %d)\0", s, [runningApp processIdentifier]];
 
-    write(fd, pid_str, pid_len);
-    write(fd, func, len);
+    [m->pipe writeData:[lisp dataUsingEncoding:NSUTF8StringEncoding]];
   };
 
   if ([c registerHotKeyWithKeyCode:kVK_ANSI_A
