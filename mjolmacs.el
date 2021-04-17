@@ -31,9 +31,6 @@
     (define-key map (kbd "ESC") #'mjolmacs-keypress-close)
     map))
 
-(unless (require 'mjolmacs-module nil t)
-  (error "The mjolmacs package needs `mjolmacs-module' to be compiled!"))
-
 (declare-function mjolmacs--start "mjolmacs")
 (declare-function mjolmacs--focus-pid "mjolmacs")
 
@@ -127,6 +124,9 @@ Returns the newly created mjolmacs buffer."
 ;;;###autoload
 (define-derived-mode mjolmacs-mode text-mode "mjolmacs"
   "Major mode for mjolmacs popup frame.")
+
+(unless (require 'mjolmacs-module nil t)
+  (error "The mjolmacs package needs `mjolmacs-module' to be compiled!"))
 
 (provide 'mjolmacs)
 ;;; mjolmacs.el ends here
