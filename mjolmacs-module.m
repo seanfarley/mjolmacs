@@ -1,42 +1,11 @@
+#import "mjolmacs-ctx.h"
+#import "mjolmacs-utils.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 
-#import "mjolmacs-module.h"
-#import "mjolmacs-utils.h"
-
 int plugin_is_GPL_compatible;
-
-@implementation MjolmacsEnv
-
-- (id)init {
-  self = [super init];
-  if (self) {
-    funcs = [[NSMutableDictionary alloc] init];
-    pipe = nil;
-  }
-
-  return self;
-}
-
-- (void)hotkeyWithEvent:(NSEvent *)hkEvent object:(id)anObject {
-  NSLog(@"Firing -[%@ %@]", NSStringFromClass([self class]),
-        NSStringFromSelector(_cmd));
-  NSLog(@"Hotkey event: %@", hkEvent);
-  NSLog(@"Object: %@", anObject);
-}
-
-- (void)openChannel:(int)fd {
-  if (!pipe) {
-    pipe = [[NSFileHandle alloc] initWithFileDescriptor:fd];
-  }
-}
-
-- (void)writeData:(NSString *)data {
-  [self->pipe writeData:[data dataUsingEncoding:NSUTF8StringEncoding]];
-}
-
-@end
 
 static emacs_value Fmjolmacs_start(emacs_env *env,
                                    __attribute__((unused)) ptrdiff_t nargs,
@@ -44,7 +13,7 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
                                    __attribute__((unused)) void *data) {
   CarbonHotKeyCenter *c = [CarbonHotKeyCenter sharedHotKeyCenter];
 
-  MjolmacsEnv *m = data;
+  MjolmacsCtx *m = data;
 
   int fd = env->open_channel(env, args[0]);
   [m openChannel:fd];
@@ -117,7 +86,7 @@ int emacs_module_init(struct emacs_runtime *ert) {
   Qnil = env->intern(env, "nil");
   Qt = env->intern(env, "t");
 
-  MjolmacsEnv *m = [[MjolmacsEnv alloc] init];
+  MjolmacsCtx *m = [[MjolmacsCtx alloc] init];
 
   bind_function(env, "mjolmacs--start", 2, 2, Fmjolmacs_start,
                 "Private C function for starting mjolmacs process", m);
