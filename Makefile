@@ -10,7 +10,7 @@ CarbonHotKey/libhotkey.so:
 	$(MAKE) -C CarbonHotKey
 
 mjolmacs-module: CarbonHotKey/libhotkey.so
-	$(CC) $(DEBUG) $(CFLAGS) $(LDFLAGS) -shared -o $@.so $@.m mjolmacs-utils.m mjolmacs-ctx.m
+	$(CC) $(DEBUG) $(CFLAGS) $(LDFLAGS) -shared -o $@.so *.m
 
 clean:
 	$(MAKE) -C CarbonHotKey clean
