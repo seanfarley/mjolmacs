@@ -78,7 +78,7 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
     NSLog(@"Unable to register hotkey for emacs example");
   }
 
-  return env->intern(env, "t");
+  return Qt;
 }
 
 static emacs_value Fmjolmacs_focus_pid(emacs_env *env,
@@ -100,68 +100,39 @@ static emacs_value Fmjolmacs_focus_pid(emacs_env *env,
     }
   }
 
-  return env->intern(env, "t");
-}
-
-/* Bind NAME to FUN.  */
-static void bind_function(emacs_env *env, const char *name, emacs_value Sfun) {
-  /* Set the function cell of the symbol named NAME to SFUN using
-     the 'fset' function.  */
-
-  /* Convert the strings to symbols by interning them */
-  emacs_value Qfset = env->intern(env, "fset");
-  emacs_value Qsym = env->intern(env, name);
-
-  /* Prepare the arguments array */
-  emacs_value args[] = {Qsym, Sfun};
-
-  /* Make the call (2 == nb of arguments) */
-  env->funcall(env, Qfset, 2, args);
-}
-
-/* Provide FEATURE to Emacs.  */
-static void provide(emacs_env *env, const char *feature) {
-  /* call 'provide' with FEATURE converted to a symbol */
-
-  emacs_value Qfeat = env->intern(env, feature);
-  emacs_value Qprovide = env->intern(env, "provide");
-  emacs_value args[] = {Qfeat};
-
-  env->funcall(env, Qprovide, 1, args);
+  return Qt;
 }
 
 int emacs_module_init(struct emacs_runtime *ert) {
   emacs_env *env = ert->get_environment(ert);
 
+  // initialize common symbols
   Qnil = env->intern(env, "nil");
   Qt = env->intern(env, "t");
 
   MjolmacsEnv *m = [[MjolmacsEnv alloc] init];
 
-  /* create a lambda (returns an emacs_value) */
-  emacs_value fun =
-      env->make_function(env, 2,          /* min. number of arguments */
-                         2,               /* max. number of arguments */
-                         Fmjolmacs_start, /* actual function pointer */
-                         "doc",           /* docstring */
-                         m                /* user pointer of your choice */
-      );
-  bind_function(env, "mjolmacs--start", fun);
+  bind_function(env, "mjolmacs--start", 2, 2, Fmjolmacs_start,
+                "Private C function for starting mjolmacs process", m);
 
-  /* create a lambda (returns an emacs_value) */
-  fun = env->make_function(
-      env, 1,              /* min. number of arguments */
-      1,                   /* max. number of arguments */
-      Fmjolmacs_focus_pid, /* actual function pointer */
-      "doc",               /* docstring */
-      m /* user pointer of your choice (data param in Fmjolmacs_double) */
-  );
+  bind_function(env, "mjolmacs--focus-pid", 1, 1, Fmjolmacs_focus_pid,
+                "Private C function used solely the previous app that was in "
+                "focus before a mjolmacs popup frame was focused.",
+                m);
 
-  bind_function(env, "mjolmacs--focus-pid", fun);
 
-  provide(env, "mjolmacs-module");
 
-  /* loaded successfully */
+
+
+
+
+
+  emacs_value Qfeat = env->intern(env, "mjolmacs-module");
+  emacs_value Qprovide = env->intern(env, "provide");
+  emacs_value args[] = {Qfeat};
+
+  env->funcall(env, Qprovide, 1, args);
+
   return 0;
 }
 
