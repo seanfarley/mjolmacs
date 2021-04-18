@@ -33,6 +33,12 @@ int plugin_is_GPL_compatible;
   }
 }
 
+- (void)writeData:(NSString *)data {
+  [self->pipe writeData:[data dataUsingEncoding:NSUTF8StringEncoding]];
+}
+
+@end
+
 static emacs_value Fmjolmacs_start(emacs_env *env,
                                    __attribute__((unused)) ptrdiff_t nargs,
                                    emacs_value args[],
@@ -67,7 +73,7 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
     NSString *lisp = [NSString
         stringWithFormat:@"(%@ %d)\0", s, [runningApp processIdentifier]];
 
-    [m->pipe writeData:[lisp dataUsingEncoding:NSUTF8StringEncoding]];
+    [m writeData:lisp];
   };
 
   if ([c registerHotKeyWithKeyCode:kVK_ANSI_A
@@ -135,5 +141,3 @@ int emacs_module_init(struct emacs_runtime *ert) {
 
   return 0;
 }
-
-@end
