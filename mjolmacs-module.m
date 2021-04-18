@@ -3,6 +3,8 @@
 #include <stdio.h>
 
 #import "mjolmacs-module.h"
+#import "mjolmacs-utils.h"
+
 int plugin_is_GPL_compatible;
 
 @implementation MjolmacsEnv
@@ -130,6 +132,9 @@ static void provide(emacs_env *env, const char *feature) {
 
 int emacs_module_init(struct emacs_runtime *ert) {
   emacs_env *env = ert->get_environment(ert);
+
+  Qnil = env->intern(env, "nil");
+  Qt = env->intern(env, "t");
 
   MjolmacsEnv *m = [[MjolmacsEnv alloc] init];
 
