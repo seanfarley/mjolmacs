@@ -33,6 +33,7 @@
 
 (declare-function mjolmacs--start "mjolmacs")
 (declare-function mjolmacs--focus-pid "mjolmacs")
+(declare-function mjolmacs-register "mjolmacs")
 
 (defun mjolmacs--filter (proc string)
   "Filter that enables mjolmacs to send code to Emacs.
@@ -110,10 +111,14 @@ Returns the newly created mjolmacs buffer."
        (make-pipe-process :name "mjolmacs"
                           :buffer buffer
                           :filter 'mjolmacs--filter
-                          :noquery t)
-       #'mjolmacs--frame-keypress)
+                          :noquery t))
       ;; (run-hooks 'mjolmacs-start-hook)
       (switch-to-buffer buffer))))
+
+(defun mjolmacs-bind-popup (key-binding)
+  "Bind KEY-BINDING to popup frame."
+  (mjolmacs-register key-binding
+                     #'mjolmacs--frame-keypress))
 
 ;;;###autoload
 (define-derived-mode mjolmacs-process-mode special-mode

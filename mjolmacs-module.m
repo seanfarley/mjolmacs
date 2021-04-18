@@ -9,14 +9,20 @@ int plugin_is_GPL_compatible;
 
 static emacs_value Fmjolmacs_start(emacs_env *env,
                                    __attribute__((unused)) ptrdiff_t nargs,
-                                   emacs_value args[],
-                                   __attribute__((unused)) void *data) {
-  CarbonHotKeyCenter *c = [CarbonHotKeyCenter sharedHotKeyCenter];
-
+                                   emacs_value args[], void *data) {
   MjolmacsCtx *m = data;
 
   int fd = env->open_channel(env, args[0]);
   [m openChannel:fd];
+
+  return Qt;
+}
+
+static emacs_value Fmjolmacs_register(emacs_env *env,
+                                      __attribute__((unused)) ptrdiff_t nargs,
+                                      emacs_value args[], void *data) {
+  CarbonHotKeyCenter *c = [CarbonHotKeyCenter sharedHotKeyCenter];
+  MjolmacsCtx *m = data;
 
   emacs_value sym_args[] = {args[1]};
 
@@ -88,7 +94,7 @@ int emacs_module_init(struct emacs_runtime *ert) {
 
   MjolmacsCtx *m = [[MjolmacsCtx alloc] init];
 
-  bind_function(env, "mjolmacs--start", 2, 2, Fmjolmacs_start,
+  bind_function(env, "mjolmacs--start", 1, 1, Fmjolmacs_start,
                 "Private C function for starting mjolmacs process", m);
 
   bind_function(env, "mjolmacs--focus-pid", 1, 1, Fmjolmacs_focus_pid,
@@ -96,6 +102,8 @@ int emacs_module_init(struct emacs_runtime *ert) {
                 "focus before a mjolmacs popup frame was focused.",
                 m);
 
+  bind_function(env, "mjolmacs-register", 2, 2, Fmjolmacs_register,
+                "Register global key binding to function", m);
 
 
 
