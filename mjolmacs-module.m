@@ -15,6 +15,11 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
   int fd = env->open_channel(env, args[0]);
   [m openChannel:fd];
 
+  // only here to silence emacs-lisp linting
+  NSString *lisp = @"(define-key mjolmacs-mode-map "
+                   @"  (kbd \"ESC\") #'mjolmacs-keypress-close)";
+  [m runLisp:lisp];
+
   return Qt;
 }
 
