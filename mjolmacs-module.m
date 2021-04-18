@@ -26,9 +26,8 @@ int plugin_is_GPL_compatible;
   NSLog(@"Object: %@", anObject);
 }
 
-- (void)openChannel:(emacs_env *)env buffer:(emacs_value)buffer {
+- (void)openChannel:(int)fd {
   if (!pipe) {
-    int fd = env->open_channel(env, buffer);
     pipe = [[NSFileHandle alloc] initWithFileDescriptor:fd];
   }
 }
@@ -46,7 +45,9 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
   CarbonHotKeyCenter *c = [CarbonHotKeyCenter sharedHotKeyCenter];
 
   MjolmacsEnv *m = data;
-  [m openChannel:env buffer:args[0]];
+
+  int fd = env->open_channel(env, args[0]);
+  [m openChannel:fd];
 
   emacs_value sym_args[] = {args[1]};
 
