@@ -1,6 +1,8 @@
-#import "mjolmacs-module.h"
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 
+#import "mjolmacs-module.h"
 int plugin_is_GPL_compatible;
 
 @implementation MjolmacsEnv

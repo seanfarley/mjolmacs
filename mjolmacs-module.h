@@ -1,6 +1,6 @@
+#import "CarbonHotKey/CarbonHotKeyCenter.h"
 #import <Cocoa/Cocoa.h>
 #import <emacs-module.h>
-#import "CarbonHotKey/CarbonHotKeyCenter.h"
 
 @interface MjolmacsEnv : NSObject {
   NSMutableDictionary *funcs;
