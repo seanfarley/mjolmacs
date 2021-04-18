@@ -8,6 +8,6 @@
 }
 
 - (void)openChannel:(int)fd;
-- (void)writeData:(NSString *)data;
+- (void)runLisp:(NSString *)lisp;
 
 @end

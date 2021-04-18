@@ -41,9 +41,9 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
         [[NSWorkspace sharedWorkspace] frontmostApplication];
 
     NSString *lisp = [NSString
-        stringWithFormat:@"(%@ %d)\0", s, [runningApp processIdentifier]];
+        stringWithFormat:@"(%@ %d)", s, [runningApp processIdentifier]];
 
-    [m writeData:lisp];
+    [m runLisp:lisp];
   };
 
   if ([c registerHotKeyWithKeyCode:kVK_ANSI_A

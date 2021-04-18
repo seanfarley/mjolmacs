@@ -25,8 +25,9 @@
   }
 }
 
-- (void)writeData:(NSString *)data {
-  [self->pipe writeData:[data dataUsingEncoding:NSUTF8StringEncoding]];
+- (void)runLisp:(NSString *)lisp {
+  NSString *nt_lisp = [NSString stringWithFormat:@"%@\0", lisp];
+  [self->pipe writeData:[nt_lisp dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
 @end
