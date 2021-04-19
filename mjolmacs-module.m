@@ -110,12 +110,6 @@ int emacs_module_init(struct emacs_runtime *ert) {
   bind_function(env, "mjolmacs-register", 2, 2, Fmjolmacs_register,
                 "Register global key binding to function", m);
 
-
-
-
-
-
-
   emacs_value Qfeat = env->intern(env, "mjolmacs-module");
   emacs_value Qprovide = env->intern(env, "provide");
   emacs_value args[] = {Qfeat};
