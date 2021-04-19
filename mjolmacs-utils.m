@@ -16,3 +16,9 @@ void bind_function(emacs_env *env, const char *name, ptrdiff_t min_arity,
 
   env->funcall(env, Qfset, 2, args);
 }
+
+void emacs_error(emacs_env *env, emacs_value err_type, NSString *msg) {
+  env->non_local_exit_throw(
+        env, err_type,
+        env->make_string(env, [msg UTF8String], [msg length]));
+}
