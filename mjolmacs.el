@@ -66,7 +66,16 @@ to switch back to said app when the popup is dismissed."
       ;; frame is already opened and user toggled the global shortcut
       (mjolmacs-keypress-close)
     ;; else, it's the first time to popup
-    (setq mjolmacs-frame (make-frame `((name . ,mjolmacs-frame-name))))
+    (setq mjolmacs-frame (make-frame `((name . ,mjolmacs-frame-name)
+                                       (top . 200)
+                                       (left . 200)
+                                       (width . 100)
+                                       (height . 20)
+                                       (vertical-scroll-bars . nil)
+                                       (horizontal-scroll-bars . nil)
+                                       (unsplittable . t)
+                                       (minibuffer . nil)
+                                       (undecorated . t))))
     (setq mjolmacs-prev-pid pid)
     (with-selected-frame mjolmacs-frame
       (switch-to-buffer (get-buffer-create "*mjolmacs*"))
@@ -127,7 +136,8 @@ Returns the newly created mjolmacs buffer."
 
 ;;;###autoload
 (define-derived-mode mjolmacs-mode text-mode "mjolmacs"
-  "Major mode for mjolmacs popup frame.")
+  "Major mode for mjolmacs popup frame."
+  (setq mode-line-format nil))
 
 (unless (require 'mjolmacs-module nil t)
   (error "The mjolmacs package needs `mjolmacs-module' to be compiled!"))
