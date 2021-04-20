@@ -1,6 +1,4 @@
-#+title: mjolmacs
-
-* Introduction
+* Mjolmacs
 
 An experimental project to use the Accessbility API from MacOS via an [[file:20210202172633-emacs.org][emacs]]
 dynamic module. Basically, [[https://github.com/Hammerspoon/hammerspoon][Hammerspoon]] (or a minimum version of it) for Emacs
