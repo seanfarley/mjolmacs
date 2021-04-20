@@ -56,6 +56,12 @@ Besides being limited to one key, we're also limited to how emacs encodes a key
 sequence, e.g. =C-i= is treated as =TAB=. To provide a keybinding for =C-i= we'd
 need to parse the string of keys by ourselves.
 
+The hyper modifier key, which emacs can understand as =fn=, is too wild to bind.
+I've tried with varying degrees of success to have =fn= bound in a similar
+manner but decided against it since [[https://karabiner-elements.pqrs.org/][Karabiner-Elements]] can handle (very well, I
+might add) =fn= as a different modifier (e.g. I have =fn= mapped to
+=Command-Meta-Super=).
+
 * LSP
 
 Using [[https://github.com/rizsotto/Bear][bear]] should work for LSP integration:
