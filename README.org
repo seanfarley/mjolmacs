@@ -8,6 +8,54 @@ lisp. Hence, the name: Mjolnir + Emacs.
 
 This project is currently just a proof of concept. Not even alpha quality.
 
+* Design Questions
+
+There are still some open questions about how to design certain features.
+
+** Multiple Keys
+
+Currently, this is restricted to one key press (e.g. =command+ctrl+a=), not for any
+technical reason, but because I haven't figured out how to make it work
+seamlessly with emacs. The current (Carbon) implementation of binding a global
+shortcut stops the event from propagating to any application, which is good,
+since that is usually the expected behavior. You probably wouldn't expect a
+global hotkey to also trigger some, unexpected, action in whatever application
+happened to be in focus.
+
+Unfortunately, this has the side-effect of blocking any key sequence that is in
+an emacs one; e.g. binding =C-c c= globally will now block =C-c= for emacs,
+which is probably not what you want.
+
+There are two ways around this that I can think of:
+
+1) Modify the global bindings to pass-thru the key presses until the last key in
+   the sequence is pressed
+
+   This approach has a few downsides. First, would be what to do for
+   applications that have a keybinding which is a subset of our global one? For
+   example, let's say we create a global keybinding that is =C-c c c c=. Sure, a
+   bit ridiculous but hopefully proves this point. Now, if we press =C-c c= in
+   emacs, =org-capture= might be run while mjolmacs sits waiting for more input.
+
+2) Dynamically activate and deactivate global keybindings when emacs is in focus
+
+   This seems really fragile and prone to bad state. For starters, this would
+   need a solid, working firing of hooks for emacs becoming activate. I fear
+   this would lead to a bad state of having non-working keybindings.
+
+3) Some deep hacking into the emacs keybinding engine
+
+   I doubt this will work without changing emacs code itself; something I wish
+   to avoid. The dynamic module api is extremely limited and can't access
+   (opaque pointer compiler errors) the, for example, NSWindow or anything else
+   cocoa related.
+
+** Key binding caveats
+
+Besides being limited to one key, we're also limited to how emacs encodes a key
+sequence, e.g. =C-i= is treated as =TAB=. To provide a keybinding for =C-i= we'd
+need to parse the string of keys by ourselves.
+
 * LSP
 
 Using [[https://github.com/rizsotto/Bear][bear]] should work for LSP integration:

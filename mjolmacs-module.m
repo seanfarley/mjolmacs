@@ -26,6 +26,16 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
 static emacs_value Fmjolmacs_register(emacs_env *env,
                                       __attribute__((unused)) ptrdiff_t nargs,
                                       emacs_value args[], void *data) {
+
+  // check number of keys in hotkey; currently, can only be one combo
+  ptrdiff_t key_vec_size = env->vec_size(env, args[0]);
+
+  if (key_vec_size > 1) {
+    emacs_error(env, env->intern(env, "too-many-keys"),
+                @"mjolmacs can only bind to a single key press");
+    return Qnil;
+  }
+
   CarbonHotKeyCenter *c = [CarbonHotKeyCenter sharedHotKeyCenter];
   MjolmacsCtx *m = data;
 
