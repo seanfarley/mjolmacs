@@ -27,12 +27,19 @@ static emacs_value Fmjolmacs_register(emacs_env *env,
                                       __attribute__((unused)) ptrdiff_t nargs,
                                       emacs_value args[], void *data) {
 
-  // check number of keys in hotkey; currently, can only be one combo
-  ptrdiff_t key_vec_size = env->vec_size(env, args[0]);
+  NSArray *keys = emacs_parse_keys(env, args[0]);
+  NSLog(@"parsed keys: %@", keys);
 
-  if (key_vec_size > 1) {
+  // check number of keys in hotkey; currently, can only be one combo
+  // ptrdiff_t key_vec_size = env->vec_size(env, args[0]);
+  if ([keys count] > 1) {
     emacs_error(env, env->intern(env, "too-many-keys"),
                 @"mjolmacs can only bind to a single key press");
+    return Qnil;
+  }
+
+  if (!keys || ![keys count]) {
+    // error happened in emacs_parse_key
     return Qnil;
   }
 
@@ -67,8 +74,9 @@ static emacs_value Fmjolmacs_register(emacs_env *env,
     [m runLisp:lisp];
   };
 
-  if ([c registerHotKeyWithKeyCode:kVK_ANSI_A
-                     modifierFlags:NSEventModifierFlagCommand
+  MjolmacsKey *mk = [keys firstObject];
+  if ([c registerHotKeyWithKeyCode:[mk.key longValue]
+                     modifierFlags:mk.flags
                               task:task]) {
     NSLog(@"Registered: %@", [c registeredHotKeys]);
   } else {
