@@ -51,8 +51,9 @@ There are two ways around this that I can think of:
 ** Key binding caveats
 
 Besides being limited to one key, we're also limited to how emacs encodes a key
-sequence, e.g. =C-i= is treated as =TAB=. To provide a keybinding for =C-i= we'd
-need to parse the string of keys by ourselves.
+sequence, e.g. =C-i= is treated as =TAB=. Therefore, we're unable to use =kbd=
+and need to parse the key sequence string by ourselves. So, instead of passing
+=(kbd "C-i")= we need to pass ="C-i"=.
 
 The hyper modifier key, which emacs can understand as =fn=, is too wild to bind.
 I've tried with varying degrees of success to have =fn= bound in a similar
