@@ -9,6 +9,7 @@
   self = [super init];
   if (self) {
     _flags = 0;
+    _key = 0;
   }
 
   return self;
@@ -37,7 +38,7 @@
   }
 
   return [NSString
-      stringWithFormat:@"(modifiers %@, key: %@)", mods_str, rev_key_map[_key]];
+      stringWithFormat:@"(modifiers %@, key: %@)", mods_str, rev_key_map[[NSNumber numberWithUnsignedInteger:_key]]];
 }
 
 @end
@@ -288,7 +289,7 @@ NSArray *emacs_parse_keys(emacs_env *env, emacs_value ekb) {
     }
 
     mk.flags |= [[mac_key_arr firstObject] longValue];
-    mk.key = [mac_key_arr lastObject];
+    mk.key = [[mac_key_arr lastObject] longValue];
 
     [mac_keys addObject:mk];
   }

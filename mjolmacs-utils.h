@@ -9,7 +9,7 @@
 }
 
 @property NSUInteger flags;
-@property (strong) NSNumber *key;
+@property NSUInteger key;
 
 @end
 
