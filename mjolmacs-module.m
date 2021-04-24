@@ -1,3 +1,4 @@
+#import "mjolmacs-constants.h"
 #import "mjolmacs-ctx.h"
 #import "mjolmacs-utils.h"
 
@@ -111,9 +112,8 @@ static emacs_value Fmjolmacs_focus_pid(emacs_env *env,
 int emacs_module_init(struct emacs_runtime *ert) {
   emacs_env *env = ert->get_environment(ert);
 
-  // initialize common symbols
-  Qnil = env->intern(env, "nil");
-  Qt = env->intern(env, "t");
+  // initialize common variables
+  init_common(env);
 
   MjolmacsCtx *m = [[MjolmacsCtx alloc] init];
 
