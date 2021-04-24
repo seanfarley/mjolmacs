@@ -10,6 +10,7 @@
 
 @property NSUInteger flags;
 @property NSUInteger key;
+@property (strong) NSString *binding;
 
 @end
 

@@ -10,6 +10,7 @@
   if (self) {
     _flags = 0;
     _key = 0;
+    _binding = nil;
   }
 
   return self;
@@ -38,7 +39,9 @@
   }
 
   return [NSString
-      stringWithFormat:@"(modifiers %@, key: %@)", mods_str, rev_key_map[[NSNumber numberWithUnsignedInteger:_key]]];
+      stringWithFormat:@"(modifiers %@, key: %@, orig: %@)", mods_str,
+                       rev_key_map[[NSNumber numberWithUnsignedInteger:_key]],
+                       _binding];
 }
 
 @end
@@ -256,6 +259,9 @@ NSArray *emacs_parse_keys(emacs_env *env, emacs_value ekb) {
 
   for (id element in keys) {
     MjolmacsKey *mk = [[MjolmacsKey alloc] init];
+
+    // store original keybinding
+    mk.binding = element;
 
     NSMutableArray *seq = [NSMutableArray
         arrayWithArray:[element componentsSeparatedByString:@"-"]];
