@@ -105,15 +105,14 @@ to switch back to said app when the popup is dismissed."
     (mjolmacs-close)))
 
 ;;;###autoload
-(defun mjolmacs-start (&optional buffer-name)
+(defun mjolmacs-start ()
   "Start a process buffer to listen for mjolmacs events.
 
-If called with an argument BUFFER-NAME, the name of the new buffer will
-be set to BUFFER-NAME, otherwise it will be `*mjolmacs*'.
+The name of the process buffer will be `*mjolmacs-process*'.
 Returns the newly created mjolmacs buffer."
   (add-function :after after-focus-change-function #'mjolmacs-close-hook)
 
-  (let ((buffer (generate-new-buffer (or buffer-name "*mjolmacs-process*"))))
+  (let ((buffer (generate-new-buffer "*mjolmacs-process*")))
     (with-current-buffer buffer
       (mjolmacs-process-mode)
       (mjolmacs--start
