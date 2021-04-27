@@ -251,7 +251,8 @@ NSArray *emacs_parse_keys(emacs_env *env, emacs_value ekb) {
   char *kb_cstr = malloc(len);
   env->copy_string_contents(env, ekb, kb_cstr, &len);
 
-  NSString *kb = [[NSString alloc] initWithUTF8String:kb_cstr];
+  NSString *kb = [NSString stringWithUTF8String:kb_cstr];
+
   NSArray *keys = [kb componentsSeparatedByString:@" "];
 
   // should be ok to free this now
