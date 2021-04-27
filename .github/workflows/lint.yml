@@ -30,3 +30,6 @@ jobs:
         check: package-lint
         file: mjolmacs.el
         ignore_warnings: ${{ matrix.ignore_warnings }}
+    - uses: DoozyX/clang-format-lint-action@v0.12
+      with:
+        extensions: 'h,m'
