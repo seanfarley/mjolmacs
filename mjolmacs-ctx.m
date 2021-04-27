@@ -21,7 +21,7 @@
 
 - (void)openChannel:(int)fd {
   if (!pipe) {
-    pipe = [[NSFileHandle alloc] initWithFileDescriptor:fd];
+    pipe = [[NSFileHandle alloc] initWithFileDescriptor:fd closeOnDealloc:YES];
   }
 }
 
