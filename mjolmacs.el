@@ -31,6 +31,7 @@
     map))
 
 (declare-function mjolmacs--start "mjolmacs")
+(declare-function mjolmacs--stop "mjolmacs")
 (declare-function mjolmacs--focus-pid "mjolmacs")
 (declare-function mjolmacs-register "mjolmacs")
 
@@ -122,6 +123,16 @@ Returns the newly created mjolmacs buffer."
                           :noquery t))
       ;; (run-hooks 'mjolmacs-start-hook)
       (switch-to-buffer buffer))))
+
+(defun mjolmacs-stop ()
+  "Stop mjolmacs and free C memory.
+
+This will shutdown the pipes, close the filehandles, and free any
+C memory we allocated."
+  (mjolmacs--stop)
+
+  ;; kill the process buffer
+  (kill-buffer "*mjolmacs-process*"))
 
 (defun mjolmacs-bind-popup (key-binding)
   "Bind KEY-BINDING to popup frame."
