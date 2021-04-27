@@ -60,6 +60,9 @@ static emacs_value Fmjolmacs_register(emacs_env *env,
 
   NSMutableString *s = [NSMutableString stringWithUTF8String:func];
 
+  // NSString copies the bytes
+  free(func);
+
   NSLog(@"LEEROY: %@", s);
 
   CarbonHotKeyTask task = ^(NSEvent *hkEvent) {
