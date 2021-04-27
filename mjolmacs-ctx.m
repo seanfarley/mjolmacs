@@ -12,6 +12,13 @@
   return self;
 }
 
+- (void)dealloc {
+  NSLog(@"Actually got to dealloc!");
+  [funcs dealloc];
+  [pipe dealloc];
+  [super dealloc];
+}
+
 - (void)hotkeyWithEvent:(NSEvent *)hkEvent object:(id)anObject {
   NSLog(@"Firing -[%@ %@]", NSStringFromClass([self class]),
         NSStringFromSelector(_cmd));
