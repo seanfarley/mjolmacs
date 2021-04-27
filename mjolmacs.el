@@ -104,6 +104,7 @@ to switch back to said app when the popup is dismissed."
   (unless (frame-focus-state mjolmacs-frame)
     (mjolmacs-close)))
 
+;;;###autoload
 (defun mjolmacs-start (&optional buffer-name)
   "Start a process buffer to listen for mjolmacs events.
 
