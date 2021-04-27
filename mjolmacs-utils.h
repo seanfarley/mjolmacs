@@ -1,8 +1,8 @@
 #ifndef MJOLMACS_UTILS_H_
 #define MJOLMACS_UTILS_H_
 
-#include <emacs-module.h>
 #import <Cocoa/Cocoa.h>
+#include <emacs-module.h>
 #include <objc/NSObjCRuntime.h>
 
 @interface MjolmacsKey : NSObject {
@@ -10,7 +10,7 @@
 
 @property NSUInteger flags;
 @property NSUInteger key;
-@property (strong) NSString *binding;
+@property(strong) NSString *binding;
 
 @end
 
