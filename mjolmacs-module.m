@@ -24,6 +24,18 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
   return Qt;
 }
 
+static emacs_value Fmjolmacs_stop(__attribute__((unused)) emacs_env *env,
+                                  __attribute__((unused)) ptrdiff_t nargs,
+                                  __attribute__((unused)) emacs_value args[],
+                                  void *data) {
+  MjolmacsCtx *m = data;
+
+  // last thing to do is shut down the pipe and free our own memory
+  [m dealloc];
+
+  return Qt;
+}
+
 static emacs_value Fmjolmacs_register(emacs_env *env,
                                       __attribute__((unused)) ptrdiff_t nargs,
                                       emacs_value args[], void *data) {
@@ -120,6 +132,9 @@ int emacs_module_init(struct emacs_runtime *ert) {
 
   bind_function(env, "mjolmacs--start", 1, 1, Fmjolmacs_start,
                 "Private C function for starting mjolmacs process", m);
+
+  bind_function(env, "mjolmacs--stop", 0, 0, Fmjolmacs_stop,
+                "Private C function for stopping the mjolmacs process", m);
 
   bind_function(env, "mjolmacs--focus-pid", 1, 1, Fmjolmacs_focus_pid,
                 "Private C function used solely the previous app that was in "
