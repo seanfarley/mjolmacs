@@ -1,9 +1,9 @@
 #ifndef MJOLMACS_CONSTANTS_H_
 #define MJOLMACS_CONSTANTS_H_
 
-#include <emacs-module.h>
-#include <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
+#include <Cocoa/Cocoa.h>
+#include <emacs-module.h>
 
 emacs_value Qnil;
 emacs_value Qt;
