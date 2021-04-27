@@ -76,9 +76,7 @@ static emacs_value Fmjolmacs_register(emacs_env *env,
   };
 
   MjolmacsKey *mk = [keys firstObject];
-  if ([c registerHotKeyWithKeyCode:mk.key
-                     modifierFlags:mk.flags
-                              task:task]) {
+  if ([c registerHotKeyWithKeyCode:mk.key modifierFlags:mk.flags task:task]) {
     NSLog(@"Registered: %@", [c registeredHotKeys]);
   } else {
     NSLog(@"Unable to register hotkey for emacs example");
