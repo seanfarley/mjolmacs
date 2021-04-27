@@ -113,6 +113,9 @@ The name of the process buffer will be `*mjolmacs-process*'.
 Returns the newly created mjolmacs buffer."
   (add-function :after after-focus-change-function #'mjolmacs-close-hook)
 
+  ;; make sure we close file handles, unregister cocoa hooks, and free memory
+  (add-hook 'kill-emacs-hook #'mjolmacs-stop)
+
   (let ((buffer (generate-new-buffer "*mjolmacs-process*")))
     (with-current-buffer buffer
       (mjolmacs-process-mode)
