@@ -129,13 +129,11 @@ Returns the newly created mjolmacs buffer."
   (mjolmacs-register key-binding
                      #'mjolmacs--frame-keypress))
 
-;;;###autoload
 (define-derived-mode mjolmacs-process-mode special-mode
   '("" nil "mjolmacs process buffer")
   "Major mode for mjolmacs process."
   (setq buffer-read-only nil))
 
-;;;###autoload
 (define-derived-mode mjolmacs-mode text-mode "mjolmacs"
   "Major mode for mjolmacs popup frame."
   (setq mode-line-format nil))
