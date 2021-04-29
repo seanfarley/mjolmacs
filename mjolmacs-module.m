@@ -70,27 +70,29 @@ static emacs_value Fmjolmacs_register(emacs_env *env,
   char *func = malloc(len);
   env->copy_string_contents(env, sym, func, &len);
 
-  NSMutableString *s = [NSMutableString stringWithUTF8String:func];
+  NSString *s = [NSString stringWithUTF8String:func];
 
   // NSString copies the bytes
   free(func);
 
-  NSLog(@"LEEROY: %@", s);
+  MjolmacsKey *mk = [keys firstObject];
+  [m.funcs setObject:s forKey:mk];
 
   CarbonHotKeyTask task = ^(NSEvent *hkEvent) {
-    NSLog(@"Firing block hotkey");
-    NSLog(@"Hotkey event: %@", hkEvent);
+    MjolmacsKey *hk_m = [MjolmacsKey keyWithMods:hkEvent.keyCode
+                                        modifier:hkEvent.modifierFlags];
+
+    NSString *lisp_func = m.funcs[hk_m];
 
     NSRunningApplication *runningApp =
         [[NSWorkspace sharedWorkspace] frontmostApplication];
 
     NSString *lisp = [NSString
-        stringWithFormat:@"(%@ %d)", s, [runningApp processIdentifier]];
+        stringWithFormat:@"(%@ %d)", lisp_func, [runningApp processIdentifier]];
 
     [m runLisp:lisp];
   };
 
-  MjolmacsKey *mk = [keys firstObject];
   if ([c registerHotKeyWithKeyCode:mk.key modifierFlags:mk.flags task:task]) {
     NSLog(@"Registered: %@", [c registeredHotKeys]);
   } else {
