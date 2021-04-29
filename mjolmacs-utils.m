@@ -35,6 +35,25 @@
   return k;
 }
 
+- (NSUInteger)flags {
+  // having a custom setter means we need to define our own getter
+  return _flags;
+}
+
+- (void)setFlags:(NSUInteger)flags {
+  // remove all the bits that aren't shift, ctrl, super, and alt
+
+  NSUInteger extra =
+      flags & ~(NSEventModifierFlagControl | NSEventModifierFlagOption |
+                NSEventModifierFlagCommand | NSEventModifierFlagShift);
+
+  if (extra) {
+    NSLog(@"mjolmacs: removing extra modifier bits %lx", extra);
+  }
+
+  _flags = flags - extra;
+}
+
 - (NSString *)description {
 
   NSMutableArray *mods = [[NSMutableArray alloc] init];

@@ -6,6 +6,7 @@
 #include <objc/NSObjCRuntime.h>
 
 @interface MjolmacsKey : NSObject {
+  NSUInteger _flags;
 }
 
 @property NSUInteger flags;
