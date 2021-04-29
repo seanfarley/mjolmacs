@@ -5,8 +5,8 @@
 - (id)init {
   self = [super init];
   if (self) {
-    funcs = [[NSMutableDictionary alloc] init];
-    pipe = nil;
+    _funcs = [[NSMutableDictionary alloc] init];
+    _pipe = nil;
   }
 
   return self;
@@ -14,8 +14,8 @@
 
 - (void)dealloc {
   NSLog(@"Actually got to dealloc!");
-  [funcs dealloc];
-  [pipe dealloc];
+  [_funcs dealloc];
+  [_pipe dealloc];
   [super dealloc];
 }
 
@@ -27,14 +27,14 @@
 }
 
 - (void)openChannel:(int)fd {
-  if (!pipe) {
-    pipe = [[NSFileHandle alloc] initWithFileDescriptor:fd closeOnDealloc:YES];
+  if (!_pipe) {
+    _pipe = [[NSFileHandle alloc] initWithFileDescriptor:fd closeOnDealloc:YES];
   }
 }
 
 - (void)runLisp:(NSString *)lisp {
   NSString *nt_lisp = [NSString stringWithFormat:@"%@\0", lisp];
-  [self->pipe writeData:[nt_lisp dataUsingEncoding:NSUTF8StringEncoding]];
+  [_pipe writeData:[nt_lisp dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
 @end
