@@ -16,6 +16,25 @@
   return self;
 }
 
++ (instancetype)keyWithMods:(NSUInteger)key modifier:(NSUInteger)mods {
+  MjolmacsKey *k = [[MjolmacsKey alloc] init];
+
+  k.key = key;
+  k.flags = mods;
+
+  return k;
+}
+
++ (instancetype)keyWithMods:(NSUInteger)key
+                   modifier:(NSUInteger)mods
+                    binding:(NSString *)b {
+  MjolmacsKey *k = [MjolmacsKey keyWithMods:key modifier:mods];
+
+  k.binding = b;
+
+  return k;
+}
+
 - (NSString *)description {
 
   NSMutableArray *mods = [[NSMutableArray alloc] init];

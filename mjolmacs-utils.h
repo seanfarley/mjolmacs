@@ -12,6 +12,11 @@
 @property NSUInteger key;
 @property(strong) NSString *binding;
 
++ (instancetype)keyWithMods:(NSUInteger)key modifier:(NSUInteger)mods;
++ (instancetype)keyWithMods:(NSUInteger)key
+                   modifier:(NSUInteger)mods
+                    binding:(NSString *)b;
+
 @end
 
 void init_common(emacs_env *env);
