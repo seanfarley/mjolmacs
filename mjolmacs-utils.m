@@ -73,6 +73,18 @@
   return h;
 }
 
+- (id)copyWithZone:(NSZone *)zone {
+  MjolmacsKey *copy = [[[self class] allocWithZone:zone] init];
+
+  if (copy) {
+    copy.flags = _flags;
+    copy.key = _key;
+    copy.binding = _binding;
+  }
+
+  return copy;
+}
+
 - (NSString *)description {
 
   NSMutableArray *mods = [[NSMutableArray alloc] init];

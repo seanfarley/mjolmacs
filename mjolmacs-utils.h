@@ -5,7 +5,7 @@
 #include <emacs-module.h>
 #include <objc/NSObjCRuntime.h>
 
-@interface MjolmacsKey : NSObject {
+@interface MjolmacsKey : NSObject <NSCopying> {
   NSUInteger _flags;
 }
 
