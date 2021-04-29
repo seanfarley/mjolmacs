@@ -61,6 +61,18 @@
   return (_key == o.key) && (_flags == o.flags);
 }
 
+- (NSUInteger)hash {
+  // coprimes: 23, 31
+  NSUInteger h = 23;
+  NSUInteger cp2 = 31;
+  h = h * cp2 + _key;
+  h = h * cp2 + _flags;
+  if (_binding) {
+    h = h * cp2 + [_binding hash];
+  }
+  return h;
+}
+
 - (NSString *)description {
 
   NSMutableArray *mods = [[NSMutableArray alloc] init];
