@@ -78,22 +78,11 @@ static emacs_value Fmjolmacs_register(emacs_env *env,
   MjolmacsKey *mk = [keys firstObject];
   [m.funcs setObject:s forKey:mk];
 
-  CarbonHotKeyTask task = ^(NSEvent *hkEvent) {
-    MjolmacsKey *hk_m = [MjolmacsKey keyWithMods:hkEvent.keyCode
-                                        modifier:hkEvent.modifierFlags];
-
-    NSString *lisp_func = m.funcs[hk_m];
-
-    NSRunningApplication *runningApp =
-        [[NSWorkspace sharedWorkspace] frontmostApplication];
-
-    NSString *lisp = [NSString
-        stringWithFormat:@"(%@ %d)", lisp_func, [runningApp processIdentifier]];
-
-    [m runLisp:lisp];
-  };
-
-  if ([c registerHotKeyWithKeyCode:mk.key modifierFlags:mk.flags task:task]) {
+  if ([c registerHotKeyWithKeyCode:mk.key
+                     modifierFlags:mk.flags
+                            target:m
+                            action:@selector(hotkeyWithEvent:object:)
+                            object:nil]) {
     NSLog(@"Registered: %@", [c registeredHotKeys]);
   } else {
     NSLog(@"Unable to register hotkey for emacs example");
