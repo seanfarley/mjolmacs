@@ -54,6 +54,13 @@
   _flags = flags - extra;
 }
 
+- (BOOL)isEqual:(id)other {
+  MjolmacsKey *o = other;
+  // binding is just a convenience string for the user's original string, so we
+  // don't need to compare its value
+  return (_key == o.key) && (_flags == o.flags);
+}
+
 - (NSString *)description {
 
   NSMutableArray *mods = [[NSMutableArray alloc] init];
