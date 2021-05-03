@@ -20,7 +20,7 @@
 
 @end
 
-void init_common(emacs_env *env);
+void init_common();
 
 void bind_function(emacs_env *env, const char *name, ptrdiff_t min_arity,
                    ptrdiff_t max_arity,

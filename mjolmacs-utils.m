@@ -115,10 +115,7 @@
 
 @end
 
-void init_common(emacs_env *env) {
-  Qnil = env->intern(env, "nil");
-  Qt = env->intern(env, "t");
-
+void init_common() {
   control = [NSNumber numberWithUnsignedLong:NSEventModifierFlagControl];
   meta = [NSNumber numberWithUnsignedLong:NSEventModifierFlagOption];
   command = [NSNumber numberWithUnsignedLong:NSEventModifierFlagCommand];

@@ -3,10 +3,6 @@
 
 #import <Carbon/Carbon.h>
 #include <Cocoa/Cocoa.h>
-#include <emacs-module.h>
-
-emacs_value Qnil;
-emacs_value Qt;
 
 const NSNumber *control;
 const NSNumber *meta;

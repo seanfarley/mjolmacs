@@ -21,7 +21,7 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
                    @"  (kbd \"ESC\") #'mjolmacs-keypress-close)";
   [m runLisp:lisp];
 
-  return Qt;
+  return env->intern(env, "t");
 }
 
 static emacs_value Fmjolmacs_stop(__attribute__((unused)) emacs_env *env,
@@ -33,7 +33,7 @@ static emacs_value Fmjolmacs_stop(__attribute__((unused)) emacs_env *env,
   // last thing to do is shut down the pipe and free our own memory
   [m dealloc];
 
-  return Qt;
+  return env->intern(env, "t");
 }
 
 static emacs_value Fmjolmacs_register(emacs_env *env,
@@ -48,12 +48,12 @@ static emacs_value Fmjolmacs_register(emacs_env *env,
   if ([keys count] > 1) {
     emacs_error(env, env->intern(env, "too-many-keys"),
                 @"mjolmacs can only bind to a single key press");
-    return Qnil;
+    return env->intern(env, "nil");
   }
 
   if (!keys || ![keys count]) {
     // error happened in emacs_parse_key
-    return Qnil;
+    return env->intern(env, "nil");
   }
 
   CarbonHotKeyCenter *c = [CarbonHotKeyCenter sharedHotKeyCenter];
@@ -88,7 +88,7 @@ static emacs_value Fmjolmacs_register(emacs_env *env,
     NSLog(@"Unable to register hotkey for emacs example");
   }
 
-  return Qt;
+  return env->intern(env, "t");
 }
 
 static emacs_value Fmjolmacs_focus_pid(emacs_env *env,
@@ -110,14 +110,14 @@ static emacs_value Fmjolmacs_focus_pid(emacs_env *env,
     }
   }
 
-  return Qt;
+  return env->intern(env, "t");
 }
 
 int emacs_module_init(struct emacs_runtime *ert) {
   emacs_env *env = ert->get_environment(ert);
 
   // initialize common variables
-  init_common(env);
+  init_common();
 
   MjolmacsCtx *m = [[MjolmacsCtx alloc] init];
 
