@@ -57,6 +57,40 @@ Fmjolmacs_authorized_notif_p(__attribute__((unused)) emacs_env *env,
   return auth_status;
 }
 
+static emacs_value
+Fmjolmacs_authorize_notifications(__attribute__((unused)) emacs_env *env,
+                                  __attribute__((unused)) ptrdiff_t nargs,
+                                  __attribute__((unused)) emacs_value args[],
+                                  void *data) {
+  MjolmacsCtx *m = data;
+
+  if (!m.isMacApp) {
+    emacs_error(env, env->intern(env, "emacs-not-mac-app"),
+                @"emacs needs to be run as a .app application; main bundle was "
+                @"not found");
+    return env->intern(env, "nil");
+  }
+
+  UNUserNotificationCenter *center =
+      [UNUserNotificationCenter currentNotificationCenter];
+
+  UNAuthorizationOptions options =
+      UNAuthorizationOptionAlert | UNAuthorizationOptionSound |
+      UNAuthorizationOptionBadge |
+      UNAuthorizationOptionProvidesAppNotificationSettings;
+
+  [center requestAuthorizationWithOptions:options
+                        completionHandler:^(BOOL granted,
+                                            NSError *_Nullable error) {
+                          if (error || granted == NO) {
+                            NSLog(@"Authorization for UNUserNotifications "
+                                  @"denied\n");
+                          }
+                        }];
+
+  return env->intern(env, "t");
+}
+
 static emacs_value Fmjolmacs_start(emacs_env *env,
                                    __attribute__((unused)) ptrdiff_t nargs,
                                    emacs_value args[], void *data) {
@@ -202,6 +236,10 @@ int emacs_module_init(struct emacs_runtime *ert) {
                 "value of nil means that emacs is not running as a bundled mac "
                 "app and therefore cannot request authorization at all.",
                 m);
+
+  bind_function(env, "mjolmacs-authorize-notifications", 0, 0,
+                Fmjolmacs_authorize_notifications,
+                "Request authorization to make notifications.", m);
 
   emacs_value Qfeat = env->intern(env, "mjolmacs-module");
   emacs_value Qprovide = env->intern(env, "provide");
