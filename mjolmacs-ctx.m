@@ -8,6 +8,7 @@
   if (self) {
     _funcs = [[NSMutableDictionary alloc] init];
     _pipe = nil;
+    _isMacApp = NO;
   }
 
   return self;

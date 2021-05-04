@@ -13,6 +13,16 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
                                    emacs_value args[], void *data) {
   MjolmacsCtx *m = data;
 
+  m.isMacApp = [[NSBundle mainBundle] bundleIdentifier] != nil;
+
+  if (!m.isMacApp) {
+    static char notif_warn[] = "mjolmacs: emacs not running as a bundled app; "
+                               "cannot use notifications";
+    emacs_value warn_args[] = {
+        env->make_string(env, notif_warn, strlen(notif_warn))};
+    env->funcall(env, env->intern(env, "message"), 1, warn_args);
+  }
+
   int fd = env->open_channel(env, args[0]);
   [m openChannel:fd];
 
