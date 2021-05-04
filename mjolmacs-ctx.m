@@ -1,6 +1,8 @@
 #import "mjolmacs-ctx.h"
 #import "mjolmacs-utils.h"
 
+#import <UserNotifications/UserNotifications.h>
+
 @implementation MjolmacsCtx
 
 - (id)init {
@@ -49,6 +51,17 @@
                                               [runningApp processIdentifier]];
 
   [self runLisp:lisp];
+}
+
+// this is needed to show notification banners while our app is in the
+// forebround; else they will not popup (but will still be in the notification
+// sidebar)
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:
+             (void (^)(UNNotificationPresentationOptions options))
+                 completionHandler {
+  completionHandler(UNNotificationPresentationOptionBanner);
 }
 
 @end

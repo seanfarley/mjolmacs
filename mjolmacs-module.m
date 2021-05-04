@@ -91,6 +91,68 @@ Fmjolmacs_authorize_notifications(__attribute__((unused)) emacs_env *env,
   return env->intern(env, "t");
 }
 
+static emacs_value Fmjolmacs_alert(emacs_env *env, ptrdiff_t nargs,
+                                   emacs_value args[], void *data) {
+  MjolmacsCtx *m = data;
+
+  if (!m.isMacApp) {
+    emacs_error(env, env->intern(env, "emacs-not-mac-app"),
+                @"emacs needs to be run as a .app application; main bundle was "
+                @"not found");
+    return env->intern(env, "nil");
+  }
+
+  UNUserNotificationCenter *center =
+      [UNUserNotificationCenter currentNotificationCenter];
+
+  UNMutableNotificationContent *content;
+  UNNotificationRequest *request;
+
+  center.delegate = (id)m;
+  content = [[UNMutableNotificationContent alloc] init];
+
+  ptrdiff_t len = 0;
+  env->copy_string_contents(env, args[0], NULL, &len);
+
+  char *mess = malloc(len);
+  env->copy_string_contents(env, args[0], mess, &len);
+
+  content.body = [NSString stringWithUTF8String:mess];
+  free(mess);
+
+  if (nargs > 1 && env->is_not_nil(env, args[1])) {
+    len = 0;
+    env->copy_string_contents(env, args[1], NULL, &len);
+
+    char *title = malloc(len);
+    env->copy_string_contents(env, args[1], title, &len);
+
+    content.title = [NSString stringWithUTF8String:title];
+    free(title);
+  }
+
+  content.sound = [UNNotificationSound defaultSound];
+  // content.attachments =
+  content.categoryIdentifier = @"";
+
+  request =
+      [UNNotificationRequest requestWithIdentifier:[[NSUUID UUID] UUIDString]
+                                           content:content
+                                           trigger:nil];
+
+  [center addNotificationRequest:request
+           withCompletionHandler:^(NSError *_Nullable error) {
+             if (error) {
+               NSLog(@"%@",
+                     [NSString
+                         stringWithFormat:@"addNotificationRequest: error = %@",
+                                          error.userInfo]);
+             }
+           }];
+
+  return env->intern(env, "t");
+}
+
 static emacs_value Fmjolmacs_start(emacs_env *env,
                                    __attribute__((unused)) ptrdiff_t nargs,
                                    emacs_value args[], void *data) {
@@ -240,6 +302,9 @@ int emacs_module_init(struct emacs_runtime *ert) {
   bind_function(env, "mjolmacs-authorize-notifications", 0, 0,
                 Fmjolmacs_authorize_notifications,
                 "Request authorization to make notifications.", m);
+
+  bind_function(env, "mjolmacs-alert", 1, 2, Fmjolmacs_alert,
+                "macOS notification alert.", m);
 
   emacs_value Qfeat = env->intern(env, "mjolmacs-module");
   emacs_value Qprovide = env->intern(env, "provide");
