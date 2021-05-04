@@ -116,22 +116,24 @@
 @end
 
 void init_common() {
-  control = [NSNumber numberWithUnsignedLong:NSEventModifierFlagControl];
-  meta = [NSNumber numberWithUnsignedLong:NSEventModifierFlagOption];
-  command = [NSNumber numberWithUnsignedLong:NSEventModifierFlagCommand];
-  shift = [NSNumber numberWithUnsignedLong:NSEventModifierFlagShift];
+  control =
+      [[NSNumber numberWithUnsignedLong:NSEventModifierFlagControl] retain];
+  meta = [[NSNumber numberWithUnsignedLong:NSEventModifierFlagOption] retain];
+  command =
+      [[NSNumber numberWithUnsignedLong:NSEventModifierFlagCommand] retain];
+  shift = [[NSNumber numberWithUnsignedLong:NSEventModifierFlagShift] retain];
 
-  modifier_map = @{
+  modifier_map = [@{
     @"C" : control,
     // @"H" : @"Hyper",
     @"M" : meta,
     @"s" : command,
     @"S" : shift,
-  };
+  } retain];
 
   // a map of a key to a combo of [modifier, key]; this is needed to properly
   // handle shifted keys, e.g. $, %, ^
-  key_map = @{
+  key_map = [@{
     @"SPC" : @[ @0, [NSNumber numberWithUnsignedLong:kVK_Space] ],
     @"ESC" : @[ @0, [NSNumber numberWithUnsignedLong:kVK_Escape] ],
     @"TAB" : @[ @0, [NSNumber numberWithUnsignedLong:kVK_Tab] ],
@@ -205,9 +207,9 @@ void init_common() {
     @"<" : @[ shift, [NSNumber numberWithUnsignedLong:kVK_ANSI_Comma] ],
     @">" : @[ shift, [NSNumber numberWithUnsignedLong:kVK_ANSI_Period] ],
     @"?" : @[ shift, [NSNumber numberWithUnsignedLong:kVK_ANSI_Slash] ],
-  };
+  } retain];
 
-  rev_key_map = @{
+  rev_key_map = [@{
     [NSNumber numberWithUnsignedLong:kVK_Space] : @"SPC",
     [NSNumber numberWithUnsignedLong:kVK_Escape] : @"ESC",
     [NSNumber numberWithUnsignedLong:kVK_Tab] : @"TAB",
@@ -283,7 +285,18 @@ void init_common() {
     // @"<" : @[ shift, [NSNumber numberWithUnsignedLong:kVK_ANSI_Comma ]],
     // @">" : @[ shift, [NSNumber numberWithUnsignedLong:kVK_ANSI_Period ]],
     // @"?" : @[ shift, [NSNumber numberWithUnsignedLong:kVK_ANSI_Slash ]],
-  };
+  } retain];
+}
+
+void dealloc_common() {
+  [control dealloc];
+  [meta dealloc];
+  [command dealloc];
+  [shift dealloc];
+
+  [modifier_map dealloc];
+  [key_map dealloc];
+  [rev_key_map dealloc];
 }
 
 void bind_function(emacs_env *env, const char *name, ptrdiff_t min_arity,

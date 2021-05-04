@@ -188,6 +188,8 @@ static emacs_value Fmjolmacs_stop(__attribute__((unused)) emacs_env *env,
   // last thing to do is shut down the pipe and free our own memory
   [m dealloc];
 
+  dealloc_common();
+
   return env->intern(env, "t");
 }
 
