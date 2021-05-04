@@ -6,7 +6,56 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#import <UserNotifications/UserNotifications.h>
+
 int plugin_is_GPL_compatible;
+
+static emacs_value
+Fmjolmacs_authorized_notif_p(__attribute__((unused)) emacs_env *env,
+                             __attribute__((unused)) ptrdiff_t nargs,
+                             __attribute__((unused)) emacs_value args[],
+                             __attribute__((unused)) void *data) {
+  MjolmacsCtx *m = data;
+
+  if (!m.isMacApp) {
+    // emacs needs to be run as a .app application; main bundle was not found
+    return env->intern(env, "nil");
+  }
+
+  UNUserNotificationCenter *center =
+      [UNUserNotificationCenter currentNotificationCenter];
+
+  __block NSInteger auth = 0;
+
+  // force macos calls to be synchronous
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+  [center getNotificationSettingsWithCompletionHandler:^(
+              UNNotificationSettings *settings) {
+    auth = settings.authorizationStatus;
+    dispatch_semaphore_signal(semaphore);
+  }];
+
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+
+  emacs_value auth_status = env->intern(env, "nil");
+
+  switch (auth) {
+  case UNAuthorizationStatusNotDetermined:
+    auth_status = env->intern(env, "not-determined");
+    break;
+  case UNAuthorizationStatusProvisional:
+    // fallthrough to granted
+  case UNAuthorizationStatusAuthorized:
+    auth_status = env->intern(env, "granted");
+    break;
+
+  default:
+    auth_status = env->intern(env, "denied");
+  }
+
+  return auth_status;
+}
 
 static emacs_value Fmjolmacs_start(emacs_env *env,
                                    __attribute__((unused)) ptrdiff_t nargs,
@@ -144,6 +193,15 @@ int emacs_module_init(struct emacs_runtime *ert) {
 
   bind_function(env, "mjolmacs-register", 2, 2, Fmjolmacs_register,
                 "Register global key binding to function", m);
+
+  bind_function(env, "mjolmacs-authorized-notifications-p", 0, 0,
+                Fmjolmacs_authorized_notif_p,
+                "Determine if mjolmacs is authorized.\n\nThere are three "
+                "states: 'not-determined, 'granted, and 'denied. 'granted is "
+                "the only one that means notifications are allowed. A return "
+                "value of nil means that emacs is not running as a bundled mac "
+                "app and therefore cannot request authorization at all.",
+                m);
 
   emacs_value Qfeat = env->intern(env, "mjolmacs-module");
   emacs_value Qprovide = env->intern(env, "provide");
