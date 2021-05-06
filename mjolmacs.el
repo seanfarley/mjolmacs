@@ -20,6 +20,7 @@
 ;;; Code:
 
 (require 'subr-x)
+(require 'ivy)
 
 (defvar mjolmacs-frame-name "mjolmacs--frame")
 (defvar mjolmacs-frame nil)
@@ -34,6 +35,7 @@
 (declare-function mjolmacs--stop "mjolmacs")
 (declare-function mjolmacs--focus-pid "mjolmacs")
 (declare-function mjolmacs-register "mjolmacs")
+(declare-function mjolmacs-alert "mjolmacs")
 
 (defun mjolmacs--filter (proc string)
   "Filter that enables mjolmacs to send code to Emacs.
@@ -68,20 +70,52 @@ to switch back to said app when the popup is dismissed."
       (mjolmacs-keypress-close)
     ;; else, it's the first time to popup
     (setq mjolmacs-frame (make-frame `((name . ,mjolmacs-frame-name)
+                                       (autoraise . t)
                                        (top . 200)
-                                       (left . 200)
+                                       (left . 0.33)
                                        (width . 100)
                                        (height . 20)
+                                       (internal-border-width . 20)
+                                       (left-fringe . 0)
+                                       (right-fringe . 0)
                                        (vertical-scroll-bars . nil)
                                        (horizontal-scroll-bars . nil)
+                                       (menu-bar-lines . 0)
+                                       (minibuffer . only)
                                        (unsplittable . t)
-                                       (minibuffer . nil)
                                        (undecorated . t))))
     (setq mjolmacs-prev-pid pid)
     (with-selected-frame mjolmacs-frame
-      (switch-to-buffer (get-buffer-create "*mjolmacs*"))
-      (mjolmacs-mode)
-      (select-frame-set-input-focus mjolmacs-frame))))
+      (with-current-buffer (get-buffer-create "*mjolmacs*")
+        (mjolmacs-mode)
+        (select-frame-set-input-focus mjolmacs-frame)
+
+        (let ((ivy-height 20)
+              (ivy-count-format ""))
+
+          (ivy-read "Emacs acronyms: "
+                    '(" Emacs: Escape-Meta-Alt-Control-Shift "
+                      " Emacs: Eight Megabytes And Constantly Swapping "
+                      " Emacs: Even a Master of Arts Comes Simpler "
+                      " Emacs: Each Manual's Audience is Completely Stupified "
+                      " Emacs: Eventually Munches All Computer Storage "
+                      " Emacs: Eradication of Memory Accomplished with Complete Simplicity "
+                      " Emacs: Easily Maintained with the Assistance of Chemical Solutions "
+                      " Emacs: Extended Macros Are Considered Superfluous "
+                      " Emacs: Every Mode Accelerates Creation of Software "
+                      " Emacs: Elsewhere Maybe All Commands are Simple "
+                      " Emacs: Emacs Makes All Computing Simple "
+                      " Emacs: Emacs Masquerades As Comfortable Shell "
+                      " Emacs: Emacs My Alternative Computer Story "
+                      " Emacs: Emacs Made Almost Completely Screwed "
+                      " Emacs: Each Mail A Continued Surprise "
+                      " Emacs: Eating Memory And Cycle-Sucking "
+                      " Emacs: Elvis Masterminds All Computer Software "
+                      " Emacs: Emacs Makes A Computer Slow" )
+                    :action (lambda (funny-quote)
+                              (mjolmacs-alert funny-quote))
+                    :unwind (lambda ()
+                              (mjolmacs-close))))))))
 
 (defun mjolmacs-close ()
   "Close mjolmac's frame."
