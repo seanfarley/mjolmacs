@@ -56,6 +56,7 @@
                        @"    (%@ %d)))",
                        func, func, func, [runningApp processIdentifier]];
 
+  // NSLog(@"LISP: %@", lisp);
   [self runLisp:lisp];
 }
 

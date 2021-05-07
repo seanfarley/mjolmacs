@@ -58,6 +58,10 @@
   MjolmacsKey *o = other;
   // binding is just a convenience string for the user's original string, so we
   // don't need to compare its value
+  // NSLog(@"self.key = %lx", _key);
+  // NSLog(@"othr.key = %lx", o.key);
+  // NSLog(@"self.flags = %lx", _flags);
+  // NSLog(@"othr.flags = %lx", o.flags);
   return (_key == o.key) && (_flags == o.flags);
 }
 
