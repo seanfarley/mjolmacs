@@ -71,9 +71,10 @@
   NSUInteger cp2 = 31;
   h = h * cp2 + _key;
   h = h * cp2 + _flags;
-  if (_binding) {
-    h = h * cp2 + [_binding hash];
-  }
+  // binding is just a convenience property
+  // if (_binding) {
+  //   h = h * cp2 + [_binding hash];
+  // }
   return h;
 }
 
