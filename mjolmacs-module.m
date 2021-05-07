@@ -287,14 +287,15 @@ int emacs_module_init(struct emacs_runtime *ert) {
   bind_function(env, "mjolmacs-register", 2, 2, Fmjolmacs_register,
                 "Register global key binding to function", m);
 
-  bind_function(env, "mjolmacs-authorized-notifications-p", 0, 0,
-                Fmjolmacs_authorized_notif_p,
-                "Determine if mjolmacs is authorized.\n\nThere are three "
-                "states: 'not-determined, 'granted, and 'denied. 'granted is "
-                "the only one that means notifications are allowed. A return "
-                "value of nil means that emacs is not running as a bundled mac "
-                "app and therefore cannot request authorization at all.",
-                m);
+  bind_function(
+      env, "mjolmacs-authorized-notifications-p", 0, 0,
+      Fmjolmacs_authorized_notif_p,
+      "Determine if mjolmacs is authorized for notifications.\n\nThere are "
+      "three states: 'not-determined, 'granted, and 'denied. 'granted is the "
+      "only one that means notifications are allowed. A return value of nil "
+      "means that emacs is not running as a bundled mac app and therefore "
+      "cannot request authorization at all.",
+      m);
 
   bind_function(env, "mjolmacs-authorize-notifications", 0, 0,
                 Fmjolmacs_authorize_notifications,
