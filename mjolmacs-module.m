@@ -107,6 +107,179 @@ Fmjolmacs_authorized_notif_p(__attribute__((unused)) emacs_env *env,
   return auth_status;
 }
 
+static emacs_value Fmjolmacs_resize_left(__attribute__((unused)) emacs_env *env,
+                                         __attribute__((unused))
+                                         ptrdiff_t nargs,
+                                         __attribute__((unused))
+                                         emacs_value args[],
+                                         __attribute__((unused)) void *data) {
+  intmax_t pid = env->extract_integer(env, args[0]);
+
+  AXUIElementRef app = AXUIElementCreateApplication(pid);
+  AXUIElementRef win;
+
+  AXError ax_error = AXUIElementCopyAttributeValue(app, kAXMainWindowAttribute,
+                                                   (CFTypeRef *)&win);
+
+  if (ax_error != kAXErrorSuccess) {
+    emacs_error(env, env->intern(env, "mjolmacs-axuielementcopy-error"),
+                @"unknown error");
+    return env->intern(env, "nil");
+  }
+
+  // ignoring other displays for now; this is just a proof of concept
+
+  // NSLog(@"NSScreen.mainScreen.w = %f", NSScreen.mainScreen.frame.size.width);
+  // NSLog(@"NSScreen.mainScreen.h = %f",
+  // NSScreen.mainScreen.frame.size.height);
+
+  CGSize windowSize;
+  CGPoint windowPosition;
+  AXValueRef temp;
+
+  windowPosition.x = 0;
+  windowPosition.y = 0;
+  temp = AXValueCreate(kAXValueCGPointType, &windowPosition);
+  AXUIElementSetAttributeValue(win, kAXPositionAttribute, temp);
+
+  windowSize.width = NSScreen.mainScreen.frame.size.width / 2;
+  windowSize.height = NSScreen.mainScreen.frame.size.height;
+  temp = AXValueCreate(kAXValueCGSizeType, &windowSize);
+  AXUIElementSetAttributeValue(win, kAXSizeAttribute, temp);
+
+  CFRelease(temp);
+  CFRelease(win);
+
+  return env->intern(env, "t");
+}
+
+static emacs_value
+Fmjolmacs_resize_right(__attribute__((unused)) emacs_env *env,
+                       __attribute__((unused)) ptrdiff_t nargs,
+                       __attribute__((unused)) emacs_value args[],
+                       __attribute__((unused)) void *data) {
+  intmax_t pid = env->extract_integer(env, args[0]);
+
+  AXUIElementRef app = AXUIElementCreateApplication(pid);
+  AXUIElementRef win;
+
+  AXError ax_error = AXUIElementCopyAttributeValue(app, kAXMainWindowAttribute,
+                                                   (CFTypeRef *)&win);
+
+  if (ax_error != kAXErrorSuccess) {
+    emacs_error(env, env->intern(env, "mjolmacs-axuielementcopy-error"),
+                @"unknown error");
+    return env->intern(env, "nil");
+  }
+
+  // ignoring other displays for now; this is just a proof of concept
+
+  CGSize windowSize;
+  CGPoint windowPosition;
+  AXValueRef temp;
+
+  windowPosition.x = NSScreen.mainScreen.frame.size.width / 2;
+  windowPosition.y = 0;
+  temp = AXValueCreate(kAXValueCGPointType, &windowPosition);
+  AXUIElementSetAttributeValue(win, kAXPositionAttribute, temp);
+
+  windowSize.width = NSScreen.mainScreen.frame.size.width / 2;
+  windowSize.height = NSScreen.mainScreen.frame.size.height;
+  temp = AXValueCreate(kAXValueCGSizeType, &windowSize);
+  AXUIElementSetAttributeValue(win, kAXSizeAttribute, temp);
+
+  CFRelease(temp);
+  CFRelease(win);
+
+  return env->intern(env, "t");
+}
+
+static emacs_value Fmjolmacs_resize_top(__attribute__((unused)) emacs_env *env,
+                                        __attribute__((unused)) ptrdiff_t nargs,
+                                        __attribute__((unused))
+                                        emacs_value args[],
+                                        __attribute__((unused)) void *data) {
+  intmax_t pid = env->extract_integer(env, args[0]);
+
+  AXUIElementRef app = AXUIElementCreateApplication(pid);
+  AXUIElementRef win;
+
+  AXError ax_error = AXUIElementCopyAttributeValue(app, kAXMainWindowAttribute,
+                                                   (CFTypeRef *)&win);
+
+  if (ax_error != kAXErrorSuccess) {
+    emacs_error(env, env->intern(env, "mjolmacs-axuielementcopy-error"),
+                @"unknown error");
+    return env->intern(env, "nil");
+  }
+
+  // ignoring other displays for now; this is just a proof of concept
+
+  CGSize windowSize;
+  CGPoint windowPosition;
+  AXValueRef temp;
+
+  windowSize.width = NSScreen.mainScreen.frame.size.width;
+  windowSize.height = NSScreen.mainScreen.frame.size.height / 2;
+
+  // NSLog(@"windowSize.width = %f", windowSize.width);
+  // NSLog(@"windowSize.height = %f", windowSize.height);
+
+  windowPosition.x = 0;
+  windowPosition.y = 0;
+  temp = AXValueCreate(kAXValueCGPointType, &windowPosition);
+  AXUIElementSetAttributeValue(win, kAXPositionAttribute, temp);
+
+  temp = AXValueCreate(kAXValueCGSizeType, &windowSize);
+  ax_error = AXUIElementSetAttributeValue(win, kAXSizeAttribute, temp);
+
+  CFRelease(temp);
+  CFRelease(win);
+
+  return env->intern(env, "t");
+}
+
+static emacs_value
+Fmjolmacs_resize_bottom(__attribute__((unused)) emacs_env *env,
+                        __attribute__((unused)) ptrdiff_t nargs,
+                        __attribute__((unused)) emacs_value args[],
+                        __attribute__((unused)) void *data) {
+  intmax_t pid = env->extract_integer(env, args[0]);
+
+  AXUIElementRef app = AXUIElementCreateApplication(pid);
+  AXUIElementRef win;
+
+  AXError ax_error = AXUIElementCopyAttributeValue(app, kAXMainWindowAttribute,
+                                                   (CFTypeRef *)&win);
+
+  if (ax_error != kAXErrorSuccess) {
+    emacs_error(env, env->intern(env, "mjolmacs-axuielementcopy-error"),
+                @"unknown error");
+    return env->intern(env, "nil");
+  }
+
+  // ignoring other displays for now; this is just a proof of concept
+
+  CGSize windowSize;
+  CGPoint windowPosition;
+  AXValueRef temp;
+
+  windowPosition.x = 0;
+  windowPosition.y = NSScreen.mainScreen.frame.size.height / 2;
+  temp = AXValueCreate(kAXValueCGPointType, &windowPosition);
+  AXUIElementSetAttributeValue(win, kAXPositionAttribute, temp);
+
+  windowSize.width = NSScreen.mainScreen.frame.size.width;
+  windowSize.height = NSScreen.mainScreen.frame.size.height / 2;
+  temp = AXValueCreate(kAXValueCGSizeType, &windowSize);
+  AXUIElementSetAttributeValue(win, kAXSizeAttribute, temp);
+
+  CFRelease(temp);
+  CFRelease(win);
+
+  return env->intern(env, "t");
+}
+
 static emacs_value
 Fmjolmacs_authorize_notifications(__attribute__((unused)) emacs_env *env,
                                   __attribute__((unused)) ptrdiff_t nargs,
@@ -361,6 +534,18 @@ int emacs_module_init(struct emacs_runtime *ert) {
   bind_function(env, "mjolmacs-authorize-accessibility", 0, 0,
                 Fmjolmacs_authorize_accessibility,
                 "Request accessibility api authorization.", m);
+
+  bind_function(env, "mjolmacs--resize-left", 1, 1, Fmjolmacs_resize_left,
+                "Test resizing a window to the left half.", m);
+
+  bind_function(env, "mjolmacs--resize-right", 1, 1, Fmjolmacs_resize_right,
+                "Test resizing a window to the right half.", m);
+
+  bind_function(env, "mjolmacs--resize-top", 1, 1, Fmjolmacs_resize_top,
+                "Test resizing a window to the top half.", m);
+
+  bind_function(env, "mjolmacs--resize-bottom", 1, 1, Fmjolmacs_resize_bottom,
+                "Test resizing a window to the bottom half.", m);
 
   emacs_value Qfeat = env->intern(env, "mjolmacs-module");
   emacs_value Qprovide = env->intern(env, "provide");
