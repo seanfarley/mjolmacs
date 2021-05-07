@@ -47,8 +47,14 @@
   NSRunningApplication *runningApp =
       [[NSWorkspace sharedWorkspace] frontmostApplication];
 
-  NSString *lisp = [NSString stringWithFormat:@"(%@ %d)", self.funcs[hk_m],
-                                              [runningApp processIdentifier]];
+  NSString *func = self.funcs[hk_m];
+
+  NSString *lisp = [NSString
+      stringWithFormat:@"(let ((maxarg (cdr (func-arity '%@))))"
+                       @"  (if (and (numberp maxarg) (= maxarg 0))"
+                       @"      (%@)"
+                       @"    (%@ %d)))",
+                       func, func, func, [runningApp processIdentifier]];
 
   [self runLisp:lisp];
 }
