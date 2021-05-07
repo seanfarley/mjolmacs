@@ -54,12 +54,13 @@ STRING is from mjolmacs writing via fd which comes from `open_channel'."
           ;; https://emacs.stackexchange.com/questions/19877/how-to-evaluate-elisp-code-contained-in-a-string#19878
           (eval (read (format "(progn %s)" msg))))))))
 
-(defun mjolmacs-leeroy (&rest extra)
-  "A callback test function.
+(defun mjolmacs-leeroy ()
+  "A callback test function."
+  (message "LEEEEEEEROYYYYY"))
 
-Optionally print EXTRA."
-  (let ((estr (string-join extra " ")))
-    (message (concat "LEEEEEEEROYYYYY" (if extra " ") estr))))
+(defun mjolmacs-leeroy2 ()
+  "A callback test function."
+  (message "JENNNNKINGSSSSSS"))
 
 (defun mjolmacs--frame-keypress (pid)
   "Toggle visibility of our own frame.
