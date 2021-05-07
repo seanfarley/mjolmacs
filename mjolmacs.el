@@ -29,6 +29,7 @@
 (defvar mjolmacs-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") #'mjolmacs-keypress-close)
+    (define-key map [escape] (kbd "C-g"))
     map))
 
 (declare-function mjolmacs--start "mjolmacs")
