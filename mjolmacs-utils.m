@@ -112,9 +112,10 @@
   }
 
   return [NSString
-      stringWithFormat:@"(modifiers %@, key: %@, orig: %@)", mods_str,
+      stringWithFormat:@"(modifiers %@ (%lx), key: %@ (%lx), orig: %@)",
+                       mods_str, _flags,
                        rev_key_map[[NSNumber numberWithUnsignedInteger:_key]],
-                       _binding];
+                       _key, _binding];
 }
 
 @end
