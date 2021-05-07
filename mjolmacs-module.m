@@ -36,6 +36,31 @@ Fmjolmacs_authorized_accessibility_p(__attribute__((unused)) emacs_env *env,
 }
 
 static emacs_value
+Fmjolmacs_authorize_accessibility(__attribute__((unused)) emacs_env *env,
+                                  __attribute__((unused)) ptrdiff_t nargs,
+                                  __attribute__((unused)) emacs_value args[],
+                                  __attribute__((unused)) void *data) {
+  MjolmacsCtx *m = data;
+
+  if (!m.isMacApp) {
+    // emacs needs to be run as a .app application; main bundle was not found
+    return env->intern(env, "nil");
+  }
+
+  NSDictionary *options = @{(id)kAXTrustedCheckOptionPrompt : @YES};
+  BOOL accessibilityEnabled =
+      AXIsProcessTrustedWithOptions((CFDictionaryRef)options);
+
+  emacs_value auth_status = env->intern(env, "nil");
+
+  if (accessibilityEnabled) {
+    auth_status = env->intern(env, "t");
+  }
+
+  return auth_status;
+}
+
+static emacs_value
 Fmjolmacs_authorized_notif_p(__attribute__((unused)) emacs_env *env,
                              __attribute__((unused)) ptrdiff_t nargs,
                              __attribute__((unused)) emacs_value args[],
@@ -332,6 +357,10 @@ int emacs_module_init(struct emacs_runtime *ert) {
   bind_function(env, "mjolmacs-authorized-accessibility-p", 0, 0,
                 Fmjolmacs_authorized_accessibility_p,
                 "Determine if mjolmacs has accessibility api authorized.", m);
+
+  bind_function(env, "mjolmacs-authorize-accessibility", 0, 0,
+                Fmjolmacs_authorize_accessibility,
+                "Request accessibility api authorization.", m);
 
   emacs_value Qfeat = env->intern(env, "mjolmacs-module");
   emacs_value Qprovide = env->intern(env, "provide");
