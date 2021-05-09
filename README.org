@@ -74,3 +74,10 @@ bear -- make
 
 Any (constructive!) feedback would be welcomed! Especially feedback about
 Objective-C and macOS integration!
+
+* Contributions
+
+Currently, I'm not accepting any code, not because of any strong reason, but I
+want to solve the multiple keybinding problem first before working on any kind
+of api or stability. If you have solutions for multiple keybindings, then please
+open an issue for discussion!
