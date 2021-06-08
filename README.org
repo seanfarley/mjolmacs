@@ -61,14 +61,21 @@ manner but decided against it since [[https://karabiner-elements.pqrs.org/][Kara
 might add) =fn= as a different modifier (e.g. I have =fn= mapped to
 =Command-Meta-Super=).
 
-* LSP
+* Development
+** LSP
 
-Using [[https://github.com/rizsotto/Bear][bear]] should work for LSP integration:
+For code completion, navigation, etc., LSP should work well on macOS since this
+is an Objective-C project. Using [[https://github.com/rizsotto/Bear][bear]] should generate a json file for clangd:
 
 #+begin_src sh
 brew install bear
 bear -- make
 #+end_src
+
+** Emacs module reference
+
+A great reference on how emacs modules work (including object lifetime cycles)
+can be found [[https://phst.eu/emacs-modules.html][here]]. Highly recommended reading!
 
 * Feedback
 
