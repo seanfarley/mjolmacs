@@ -21,7 +21,7 @@ global hotkey to also trigger some, unexpected, action in whatever application
 happened to be in focus.
 
 Unfortunately, this has the side-effect of blocking any key sequence that is in
-an emacs one; e.g. binding =C-c c= globally will now block =C-c= for emacs,
+an emacs one; e.g. binding =C-c c= globally will now block =C-c= for Emacs,
 which is probably not what you want.
 
 There are two ways around this that I can think of:
@@ -33,29 +33,29 @@ There are two ways around this that I can think of:
    applications that have a keybinding which is a subset of our global one? For
    example, let's say we create a global keybinding that is =C-c c c c=. Sure, a
    bit ridiculous but hopefully proves this point. Now, if we press =C-c c= in
-   emacs, =org-capture= might be run while mjolmacs sits waiting for more input.
+   Emacs, =org-capture= might be run while mjolmacs sits waiting for more input.
 
-2) Dynamically activate and deactivate global keybindings when emacs is in focus
+2) Dynamically activate and deactivate global keybindings when Emacs is in focus
 
    This seems really fragile and prone to bad state. For starters, this would
-   need a solid, working firing of hooks for emacs becoming activate. I fear
+   need a solid, working firing of hooks for Emacs becoming activate. I fear
    this would lead to a bad state of having non-working keybindings.
 
-3) Some deep hacking into the emacs keybinding engine
+3) Some deep hacking into the Emacs keybinding engine
 
-   I doubt this will work without changing emacs code itself; something I wish
-   to avoid. The dynamic module api is extremely limited and can't access
+   I doubt this will work without changing Emacs code itself; something I wish
+   to avoid. The dynamic module API is extremely limited and can't access
    (opaque pointer compiler errors) the, for example, NSWindow or anything else
    cocoa related.
 
 ** Key binding caveats
 
-Besides being limited to one key, we're also limited to how emacs encodes a key
+Besides being limited to one key, we're also limited to how Emacs encodes a key
 sequence, e.g. =C-i= is treated as =TAB=. Therefore, we're unable to use =kbd=
 and need to parse the key sequence string by ourselves. So, instead of passing
 =(kbd "C-i")= we need to pass ="C-i"=.
 
-The hyper modifier key, which emacs can understand as =fn=, is too wild to bind.
+The hyper modifier key, which Emacs can understand as =fn=, is too wild to bind.
 I've tried with varying degrees of success to have =fn= bound in a similar
 manner but decided against it since [[https://karabiner-elements.pqrs.org/][Karabiner-Elements]] can handle (very well, I
 might add) =fn= as a different modifier (e.g. I have =fn= mapped to
@@ -65,7 +65,7 @@ might add) =fn= as a different modifier (e.g. I have =fn= mapped to
 ** LSP
 
 For code completion, navigation, etc., LSP should work well on macOS since this
-is an Objective-C project. Using [[https://github.com/rizsotto/Bear][bear]] should generate a json file for clangd:
+is an Objective-C project. Using [[https://github.com/rizsotto/Bear][bear]] should generate a json file for =clangd=:
 
 #+begin_src sh
 brew install bear
@@ -74,7 +74,7 @@ bear -- make
 
 ** Emacs module reference
 
-A great reference on how emacs modules work (including object lifetime cycles)
+A great reference on how Emacs modules work (including object lifetime cycles)
 can be found [[https://phst.eu/emacs-modules.html][here]]. Highly recommended reading!
 
 * Feedback
@@ -86,5 +86,5 @@ Objective-C and macOS integration!
 
 Currently, I'm not accepting any code, not because of any strong reason, but I
 want to solve the multiple keybinding problem first before working on any kind
-of api or stability. If you have solutions for multiple keybindings, then please
+of API or stability. If you have solutions for multiple keybindings, then please
 open an issue for discussion!
