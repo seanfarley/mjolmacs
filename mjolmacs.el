@@ -66,7 +66,16 @@ STRING is from mjolmacs writing via fd which comes from `open_channel'."
   "Toggle visibility of our own frame.
 
 PID is the process id of the app when the key was pressed. Used
-to switch back to said app when the popup is dismissed."
+to switch back to said app when the popup is dismissed.
+
+Originally, from https://xenodium.com/emacs-utilities-for-your-os/
+
+For raising and focusing input in the new frame:
+https://askubuntu.com/questions/283711/application-focus-of-emacsclient-frame
+
+1) this needs some kind of canceling logic (mouse click outside, losing
+focus, cancel key)
+2) seems to activate Emacs after selecting an option."
   (if mjolmacs-frame
       ;; frame is already opened and user toggled the global shortcut
       (mjolmacs-keypress-close)
