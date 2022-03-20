@@ -20,7 +20,6 @@
 ;;; Code:
 
 (require 'subr-x)
-(require 'ivy)
 
 (defvar mjolmacs-frame-name "mjolmacs--frame")
 (defvar mjolmacs-frame nil)
@@ -101,32 +100,29 @@ focus, cancel key)
         (mjolmacs-mode)
         (select-frame-set-input-focus mjolmacs-frame)
 
-        (let ((ivy-height 20)
-              (ivy-count-format ""))
-
-          (ivy-read "Emacs acronyms: "
-                    '(" Emacs: Escape-Meta-Alt-Control-Shift "
-                      " Emacs: Eight Megabytes And Constantly Swapping "
-                      " Emacs: Even a Master of Arts Comes Simpler "
-                      " Emacs: Each Manual's Audience is Completely Stupified "
-                      " Emacs: Eventually Munches All Computer Storage "
-                      " Emacs: Eradication of Memory Accomplished with Complete Simplicity "
-                      " Emacs: Easily Maintained with the Assistance of Chemical Solutions "
-                      " Emacs: Extended Macros Are Considered Superfluous "
-                      " Emacs: Every Mode Accelerates Creation of Software "
-                      " Emacs: Elsewhere Maybe All Commands are Simple "
-                      " Emacs: Emacs Makes All Computing Simple "
-                      " Emacs: Emacs Masquerades As Comfortable Shell "
-                      " Emacs: Emacs My Alternative Computer Story "
-                      " Emacs: Emacs Made Almost Completely Screwed "
-                      " Emacs: Each Mail A Continued Surprise "
-                      " Emacs: Eating Memory And Cycle-Sucking "
-                      " Emacs: Elvis Masterminds All Computer Software "
-                      " Emacs: Emacs Makes A Computer Slow" )
-                    :action (lambda (funny-quote)
-                              (mjolmacs-alert funny-quote))
-                    :unwind (lambda ()
-                              (mjolmacs-close))))))))
+        (completing-read "Emacs acronyms: "
+                         '(" Emacs: Escape-Meta-Alt-Control-Shift "
+                           " Emacs: Eight Megabytes And Constantly Swapping "
+                           " Emacs: Even a Master of Arts Comes Simpler "
+                           " Emacs: Each Manual's Audience is Completely Stupified "
+                           " Emacs: Eventually Munches All Computer Storage "
+                           " Emacs: Eradication of Memory Accomplished with Complete Simplicity "
+                           " Emacs: Easily Maintained with the Assistance of Chemical Solutions "
+                           " Emacs: Extended Macros Are Considered Superfluous "
+                           " Emacs: Every Mode Accelerates Creation of Software "
+                           " Emacs: Elsewhere Maybe All Commands are Simple "
+                           " Emacs: Emacs Makes All Computing Simple "
+                           " Emacs: Emacs Masquerades As Comfortable Shell "
+                           " Emacs: Emacs My Alternative Computer Story "
+                           " Emacs: Emacs Made Almost Completely Screwed "
+                           " Emacs: Each Mail A Continued Surprise "
+                           " Emacs: Eating Memory And Cycle-Sucking "
+                           " Emacs: Elvis Masterminds All Computer Software "
+                           " Emacs: Emacs Makes A Computer Slow" )
+                         :action (lambda (funny-quote)
+                                   (mjolmacs-alert funny-quote))
+                         :unwind (lambda ()
+                                   (mjolmacs-close)))))))
 
 (defun mjolmacs-close ()
   "Close mjolmac's frame."
