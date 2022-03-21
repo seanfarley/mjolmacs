@@ -361,6 +361,17 @@ static emacs_value Fmjolmacs_alert(emacs_env *env, ptrdiff_t nargs,
     return env->intern(env, "nil");
   }
 
+  // make sure notifications are authorized, else nothing will appear to happen
+  // and there is no error
+  emacs_value sub_args[] = {};
+  emacs_value sym = env->funcall(
+      env, env->intern(env, "mjolmacs-authorize-notifications"), 0, sub_args);
+
+  if (!env->is_not_nil(env, sym)) {
+    // error has already been handled by `mjolmacs-authorize-notifications'
+    return env->intern(env, "nil");
+  }
+
   UNUserNotificationCenter *center =
       [UNUserNotificationCenter currentNotificationCenter];
 
