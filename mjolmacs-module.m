@@ -309,14 +309,37 @@ Fmjolmacs_authorize_notifications(__attribute__((unused)) emacs_env *env,
       UNAuthorizationOptionBadge |
       UNAuthorizationOptionProvidesAppNotificationSettings;
 
-  [center requestAuthorizationWithOptions:options
-                        completionHandler:^(BOOL granted,
-                                            NSError *_Nullable error) {
-                          if (error || granted == NO) {
-                            NSLog(@"Authorization for UNUserNotifications "
-                                  @"denied\n");
-                          }
-                        }];
+  __block NSError *err = nil;
+
+  // force macos calls to be synchronous
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+  [center
+      requestAuthorizationWithOptions:options
+                    completionHandler:^(__attribute__((unused)) BOOL granted,
+                                        NSError *_Nullable error) {
+                      if (error) {
+                        // granted seems to overlap with error; in testing
+                        // this, error was always set to seomthing if
+                        // granted was false
+                        err = [error retain];
+                      }
+                      dispatch_semaphore_signal(semaphore);
+                    }];
+
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+
+  if (err) {
+    static char notif_warn[] = "mjolmacs: emacs not authorized to send "
+                               "notifications; check system prefences to"
+                               "allow";
+    emacs_value warn_args[] = {
+        env->make_string(env, notif_warn, strlen(notif_warn))};
+    env->funcall(env, env->intern(env, "message"), 1, warn_args);
+
+    [err release];
+    return env->intern(env, "nil");
+  }
 
   return env->intern(env, "t");
 }
@@ -376,15 +399,22 @@ static emacs_value Fmjolmacs_alert(emacs_env *env, ptrdiff_t nargs,
                                            content:content
                                            trigger:nil];
 
-  [center addNotificationRequest:request
-           withCompletionHandler:^(NSError *_Nullable error) {
-             if (error) {
-               NSLog(@"%@",
-                     [NSString
-                         stringWithFormat:@"addNotificationRequest: error = %@",
-                                          error.userInfo]);
-             }
-           }];
+  // force macos calls to be synchronous
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+  [center
+      addNotificationRequest:request
+       withCompletionHandler:^(NSError *_Nullable error) {
+         if (error) {
+           NSLog(@"%@",
+                 [NSString stringWithFormat:
+                               @"(LEEROY) addNotificationRequest: error = %@",
+                               error]);
+         }
+         dispatch_semaphore_signal(semaphore);
+       }];
+
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
   return env->intern(env, "t");
 }
