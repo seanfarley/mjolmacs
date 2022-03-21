@@ -61,6 +61,17 @@ manner but decided against it since [[https://karabiner-elements.pqrs.org/][Kara
 might add) =fn= as a different modifier (e.g. I have =fn= mapped to
 =Command-Meta-Super=).
 
+* Notifications
+
+For notifications to work, Emacs itself needs to be signed. For me, that meant:
+
+#+begin_src bash
+$ find $EMACSPATH/Emacs.app -type f -perm +111 -exec codesign -s "Developer ID Application: Sean Farley (B12332H2343)" {} \;
+$ codesign -s "Apple Development: Sean Farley (B12332H2343)" $EMACSPATH/Emacs.app
+#+end_src
+
+Otherwise, you might see the error =Notifications are not allowed for this application=.
+
 * Development
 ** LSP
 
