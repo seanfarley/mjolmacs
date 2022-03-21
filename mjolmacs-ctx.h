@@ -10,6 +10,8 @@
 
 // bool of emacs running as a mac app (i.e. with the .app extension)
 @property BOOL isMacApp;
+// is emacs codesigned
+@property BOOL isCodeSigned;
 
 - (void)openChannel:(int)fd;
 - (void)runLisp:(NSString *)lisp;

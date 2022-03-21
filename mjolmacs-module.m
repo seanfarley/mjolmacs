@@ -1,6 +1,7 @@
 #import "mjolmacs-constants.h"
 #import "mjolmacs-ctx.h"
 #import "mjolmacs-utils.h"
+#include <MacTypes.h>
 
 #include <stddef.h>
 #include <stdint.h>
@@ -294,6 +295,12 @@ Fmjolmacs_authorize_notifications(__attribute__((unused)) emacs_env *env,
     return env->intern(env, "nil");
   }
 
+  if (!m.isCodeSigned) {
+    emacs_error(env, env->intern(env, "emacs-not-codesigned"),
+                @"emacs needs to be codesigned to all notifications");
+    return env->intern(env, "nil");
+  }
+
   UNUserNotificationCenter *center =
       [UNUserNotificationCenter currentNotificationCenter];
 
@@ -322,6 +329,12 @@ static emacs_value Fmjolmacs_alert(emacs_env *env, ptrdiff_t nargs,
     emacs_error(env, env->intern(env, "emacs-not-mac-app"),
                 @"emacs needs to be run as a .app application; main bundle was "
                 @"not found");
+    return env->intern(env, "nil");
+  }
+
+  if (!m.isCodeSigned) {
+    emacs_error(env, env->intern(env, "emacs-not-codesigned"),
+                @"emacs needs to be codesigned to all notifications");
     return env->intern(env, "nil");
   }
 
@@ -382,6 +395,28 @@ static emacs_value Fmjolmacs_start(emacs_env *env,
   MjolmacsCtx *m = data;
 
   m.isMacApp = [[NSBundle mainBundle] bundleIdentifier] != nil;
+  m.isCodeSigned = YES;
+
+  SecStaticCodeRef ref = NULL;
+
+  NSURL *url = [NSURL URLWithString:[[NSBundle mainBundle] executablePath]];
+
+  OSStatus status;
+
+  // obtain the cert info from the executable
+  status = SecStaticCodeCreateWithPath((CFURLRef)url, kSecCSDefaultFlags, &ref);
+
+  if (ref == NULL || status != noErr) {
+    // definitely not signed
+    m.isCodeSigned = NO;
+  }
+
+  // create the requirement to check against
+  status = SecStaticCodeCheckValidity(ref, kSecCSCheckAllArchitectures, NULL);
+
+  if (status != noErr) {
+    m.isCodeSigned = NO;
+  }
 
   if (!m.isMacApp) {
     static char notif_warn[] = "mjolmacs: emacs not running as a bundled app; "
