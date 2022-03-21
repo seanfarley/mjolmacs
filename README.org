@@ -61,6 +61,12 @@ manner but decided against it since [[https://karabiner-elements.pqrs.org/][Kara
 might add) =fn= as a different modifier (e.g. I have =fn= mapped to
 =Command-Meta-Super=).
 
+** Async
+
+Most macOS system calls are asynchronous by design so Mjolmacs forces these
+into synchronous calls to work in a more Emacs-y way for now. We can reevaluate
+or add asynchronous sibling functions in the future.
+
 * Notifications
 
 For notifications to work, Emacs itself needs to be signed. For me, that meant:
