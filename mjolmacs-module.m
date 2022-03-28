@@ -384,11 +384,11 @@ static emacs_value Fmjolmacs_alert(emacs_env *env, ptrdiff_t nargs,
   ptrdiff_t len = 0;
   env->copy_string_contents(env, args[0], NULL, &len);
 
-  char *mess = malloc(len);
-  env->copy_string_contents(env, args[0], mess, &len);
+  char *msg = malloc(len);
+  env->copy_string_contents(env, args[0], msg, &len);
 
-  content.body = [NSString stringWithUTF8String:mess];
-  free(mess);
+  content.body = [NSString stringWithUTF8String:msg];
+  free(msg);
 
   if (nargs > 1 && env->is_not_nil(env, args[1])) {
     len = 0;
