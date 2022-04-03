@@ -240,6 +240,57 @@ static emacs_value Fmjolmacs_resize_top(__attribute__((unused)) emacs_env *env,
   return env->intern(env, "t");
 }
 
+static emacs_value Fmjolmacs_show_text(emacs_env *env,
+                                       __attribute__((unused)) ptrdiff_t nargs,
+                                       __attribute__((unused))
+                                       emacs_value args[],
+                                       __attribute__((unused)) void *data) {
+
+  MjolmacsCtx *m = data;
+
+  ptrdiff_t len = 0;
+  env->copy_string_contents(env, args[0], NULL, &len);
+
+  char *msg = malloc(len);
+  env->copy_string_contents(env, args[0], msg, &len);
+
+  NSString *strMsg = [NSString stringWithUTF8String:msg];
+  free(msg);
+
+  CGFloat fontSize = env->extract_float(env, args[1]);
+
+  len = 0;
+  env->copy_string_contents(env, args[2], NULL, &len);
+
+  char *font_c = malloc(len);
+  env->copy_string_contents(env, args[2], font_c, &len);
+
+  NSString *fontFamily = [NSString stringWithUTF8String:font_c];
+  free(font_c);
+
+  NSFont *font = [NSFont fontWithName:fontFamily size:fontSize];
+  if (!font) {
+    emacs_error(env, env->intern(env, "mjolmacs-font-not-found"),
+                [NSString stringWithFormat:@"couldn't find specified font: %@",
+                                           fontFamily]);
+    return env->intern(env, "nil");
+  }
+
+  [m showMyWindow:strMsg font:font];
+  return env->intern(env, "t");
+}
+
+static emacs_value Fmjolmacs_close_text(emacs_env *env,
+                                        __attribute__((unused)) ptrdiff_t nargs,
+                                        __attribute__((unused))
+                                        emacs_value args[],
+                                        __attribute__((unused)) void *data) {
+
+  MjolmacsCtx *m = data;
+  [m closeMyWindow];
+  return env->intern(env, "t");
+}
+
 static emacs_value
 Fmjolmacs_resize_bottom(__attribute__((unused)) emacs_env *env,
                         __attribute__((unused)) ptrdiff_t nargs,
@@ -622,6 +673,12 @@ int emacs_module_init(struct emacs_runtime *ert) {
 
   bind_function(env, "mjolmacs--resize-bottom", 1, 1, Fmjolmacs_resize_bottom,
                 "Test resizing a window to the bottom half.", m);
+
+  bind_function(env, "mjolmacs--show-text", 3, 3, Fmjolmacs_show_text,
+                "Show a pop-up window of text.", m);
+
+  bind_function(env, "mjolmacs-close-text", 0, 0, Fmjolmacs_close_text,
+                "Close a pop-up window, if any are open.", m);
 
   emacs_value Qfeat = env->intern(env, "mjolmacs-module");
   emacs_value Qprovide = env->intern(env, "provide");

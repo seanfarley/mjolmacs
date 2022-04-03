@@ -71,4 +71,63 @@
   completionHandler(UNNotificationPresentationOptionBanner);
 }
 
+- (void)showMyWindow:(NSString *)strMsg font:(NSFont *)font {
+  NSSize boundingSize =
+      [strMsg sizeWithAttributes:@{NSFontAttributeName : font}];
+
+  // add some padding else the text won't quite fit; perhaps a difference in how
+  // Apple actually computes the size for a window around text
+  boundingSize.width += 20;
+  boundingSize.height += 5;
+
+  NSRect boundingRect =
+      NSMakeRect(0.0, 0.0, boundingSize.width, boundingSize.height);
+
+  // unknown why these offsets are so weird
+  NSTextField *strTextField = [[NSTextField alloc]
+      initWithFrame:NSMakeRect(-5.0, -8.0, boundingSize.width,
+                               boundingSize.height)];
+  strTextField.bezeled = NO;
+  strTextField.editable = NO;
+  strTextField.drawsBackground = NO;
+  strTextField.textColor = NSColor.whiteColor;
+  strTextField.font = font;
+  strTextField.stringValue = strMsg;
+  strTextField.alignment = NSTextAlignmentCenter;
+
+  NSBox *myBox = [[NSBox alloc] initWithFrame:boundingRect];
+  myBox.boxType = NSBoxCustom;
+  myBox.cornerRadius = 15.0;
+  // mimics the default color of the system HUD background
+  myBox.fillColor = [NSColor colorWithCalibratedWhite:0.12549 alpha:0.85];
+  [myBox addSubview:strTextField];
+
+  self.textWindow =
+      [[NSPanel alloc] initWithContentRect:boundingRect
+                                 styleMask:NSWindowStyleMaskHUDWindow |
+                                           NSWindowStyleMaskNonactivatingPanel |
+                                           NSWindowStyleMaskUtilityWindow
+                                   backing:NSBackingStoreBuffered
+                                     defer:YES];
+  self.textWindow.opaque = NO;
+  self.textWindow.backgroundColor = NSColor.clearColor;
+  self.textWindow.level = NSStatusWindowLevel;
+  [self.textWindow.contentView addSubview:myBox];
+
+  [self.textWindow center];
+  [self.textWindow makeKeyAndOrderFront:[NSApp mainWindow]];
+
+  [NSTimer scheduledTimerWithTimeInterval:3
+                                   target:self
+                                 selector:@selector(closeMyWindow)
+                                 userInfo:nil
+                                  repeats:NO];
+}
+
+- (void)closeMyWindow {
+  // could possibly return nil / t if myWindow is actually opened (and then
+  // closed)
+  [self.textWindow close];
+}
+
 @end

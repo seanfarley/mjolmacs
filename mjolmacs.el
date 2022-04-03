@@ -36,6 +36,7 @@
 (declare-function mjolmacs--focus-pid "mjolmacs")
 (declare-function mjolmacs-register "mjolmacs")
 (declare-function mjolmacs-alert "mjolmacs")
+(declare-function mjolmacs--show-text "mjolmacs")
 
 (defun mjolmacs--filter (proc string)
   "Filter that enables mjolmacs to send code to Emacs.
@@ -145,6 +146,17 @@ focus, cancel key)
   ;; this function is also called when activating emacs; e.g. Firefox -> Emacs
   (unless (frame-focus-state mjolmacs-frame)
     (mjolmacs-close)))
+
+(defun mjolmacs-show-text (txt &optional font)
+  "Show a popup of TXT stylized with optional FONT.
+
+Currently, only font family and font size are used. Default font
+size is 45 and default font family is Helvetica."
+  (let ((font-size (or (if font (font-get font :size)) 45))
+        (font-family (or (if font (font-get font :family)) "Helvetica")))
+    (mjolmacs--show-text txt
+                         (float font-size)
+                         (format "%s" font-family))))
 
 ;;;###autoload
 (defun mjolmacs-start ()

@@ -7,6 +7,7 @@
 
 @property(strong) NSMutableDictionary *funcs;
 @property(strong) NSFileHandle *pipe;
+@property(strong) NSWindow *textWindow;
 
 // bool of emacs running as a mac app (i.e. with the .app extension)
 @property BOOL isMacApp;
@@ -15,5 +16,7 @@
 
 - (void)openChannel:(int)fd;
 - (void)runLisp:(NSString *)lisp;
+- (void)showMyWindow:(NSString *)strMsg font:(NSFont *)font;
+- (void)closeMyWindow;
 
 @end
