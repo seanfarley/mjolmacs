@@ -61,7 +61,7 @@
 }
 
 // this is needed to show notification banners while our app is in the
-// forebround; else they will not popup (but will still be in the notification
+// foreground; else they will not popup (but will still be in the notification
 // sidebar)
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
