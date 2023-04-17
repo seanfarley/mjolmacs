@@ -4,7 +4,9 @@
 tmp/
 
 .build
+.cache
 Packages
 *.xcodeproj
 xcuserdata/
 *.framework
+compile_commands.json
